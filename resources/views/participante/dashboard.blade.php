@@ -5,12 +5,12 @@
         </h2>
     </x-slot>
 
-    {{-- 1. CDN Chart.js (Necesario para que cargue el gráfico) --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
+            {{-- 1. BARRA DE BIENVENIDA --}}
             <div
                 class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 border-l-4 {{ $evento_inscrito ? 'border-indigo-500' : 'border-green-500' }}">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -38,12 +38,11 @@
             </div>
 
             @if ($equipo)
-                {{-- ================= MODO CON EQUIPO ================= --}}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     <div class="lg:col-span-2 space-y-6">
-                        <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg overflow-hidden">
 
+                        <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg overflow-hidden">
                             <div
                                 class="px-6 py-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/20">
                                 <div>
@@ -55,7 +54,6 @@
                                     </h3>
                                 </div>
 
-                                {{-- Botones de Acción --}}
                                 @php
                                     $mi_participacion = $equipo->participantes->where('user_id', Auth::id())->first();
                                     $soy_lider =
@@ -150,8 +148,7 @@
                                 </div>
 
                                 <div>
-                                    <h4 class="text-xs font-bold text-gray-400 uppercase mb-3">Integrantes
-                                        ({{ $equipo->participantes->count() }})</h4>
+                                    <h4 class="text-xs font-bold text-gray-400 uppercase mb-3">Integrantes</h4>
                                     <div class="flex flex-wrap gap-3">
                                         @foreach ($equipo->participantes as $miembro)
                                             <div
@@ -172,6 +169,56 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div
+                            class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 flex flex-col justify-center min-h-[200px]">
+                            <h3
+                                class="text-sm font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center uppercase tracking-wider">
+                                <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                </svg>
+                                Retroalimentación de los Jueces
+                            </h3>
+
+                            @if ($proyecto && $proyecto->comentarios->isNotEmpty())
+                                <div class="space-y-4">
+                                    @foreach ($proyecto->comentarios as $comentario)
+                                        <div
+                                            class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800/50 relative">
+                                            <div class="absolute top-0 left-0 w-1 h-full bg-blue-400 rounded-l-lg">
+                                            </div>
+                                            <p class="text-xs font-bold text-blue-600 dark:text-blue-300 mb-1">
+                                                Juez {{ $loop->iteration }} <span
+                                                    class="text-gray-400 font-normal ml-2">•
+                                                    {{ $comentario->created_at->diffForHumans() }}</span>
+                                            </p>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300 italic leading-relaxed">
+                                                "{{ $comentario->comentario }}"
+                                            </p>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                {{-- ESTADO VACÍO (Sin comentarios) --}}
+                                <div
+                                    class="flex flex-col items-center justify-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
+                                    <svg class="w-10 h-10 text-gray-300 dark:text-gray-600 mb-2" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                                        </path>
+                                    </svg>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Sin comentarios aún
+                                    </p>
+                                    <p class="text-xs text-gray-400 mt-1 text-center max-w-xs">
+                                        Los comentarios aparecerán aquí cuando los jueces evalúen tu proyecto.
+                                    </p>
+                                </div>
+                            @endif
+                        </div>
+
                     </div>
 
                     <div class="lg:col-span-1 space-y-6">
@@ -190,104 +237,90 @@
                             <div
                                 class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
                                 <span class="text-xs text-gray-500">Calificación Final:</span>
-                                {{-- Muestra el puntaje total calculado en el controlador --}}
                                 <span
                                     class="font-bold text-lg text-indigo-600 dark:text-indigo-400">{{ number_format($puntajeTotal * 10, 1) }}/100</span>
                             </div>
-                            <div class="lg:col-span-1 space-y-6">
+                        </div>
 
-                                @if ($equipo && $proyecto && $puntajeTotal > 0)
-                                    <div
-                                        class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 border-l-4 border-yellow-500">
-                                        <h3 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-2 uppercase">
-                                            Constancias</h3>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
-                                            Documentos oficiales disponibles para descarga inmediata. Por participacion o podio.
-                                        </p>
-                                        <div class="flex flex-col gap-2">
-                                            {{-- Botón 1: Individual --}}
-                                            <a href="{{ route('participante.constancia.imprimir', 'individual') }}"
-                                                target="_blank"
-                                                class="flex items-center justify-center w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-500 rounded-md font-bold text-xs uppercase transition">
-                                                <svg class="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400"
-                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
-                                                    </path>
-                                                </svg>
-                                                Personal
-                                            </a>
+                        @if ($equipo && $proyecto && $puntajeTotal > 0)
+                            <div
+                                class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6 border-l-4 border-yellow-500">
+                                <h3 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-2 uppercase">
+                                    Constancias</h3>
+                                <div class="flex flex-col gap-2 mt-4">
+                                    <a href="{{ route('participante.constancia.imprimir', 'individual') }}"
+                                        target="_blank"
+                                        class="flex items-center justify-center w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-500 rounded-md font-bold text-xs uppercase transition">
+                                        Personal
+                                    </a>
+                                    <a href="{{ route('participante.constancia.imprimir', 'equipo') }}"
+                                        target="_blank"
+                                        class="flex items-center justify-center w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md font-bold text-xs uppercase transition shadow-md">
+                                        Del Equipo
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
 
-                                            {{-- Botón 2: Equipo --}}
-                                            <a href="{{ route('participante.constancia.imprimir', 'equipo') }}"
-                                                target="_blank"
-                                                class="flex items-center justify-center w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md font-bold text-xs uppercase transition shadow-md">
-                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                                                    </path>
-                                                </svg>
-                                                Del Equipo
-                                            </a>
-                                        </div>
+
+
+
+
+                        <div class="lg:col-span-1">
+                            <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
+                                <h3 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-4 uppercase">
+                                    Eventos
+                                    Próximos</h3>
+
+                                @if ($eventos_proximos->isEmpty())
+                                    <div class="text-center py-4">
+                                        <p class="text-gray-500 dark:text-gray-400 text-xs">No hay eventos en
+                                            agenda.</p>
+                                    </div>
+                                @else
+                                    <div class="space-y-3">
+                                        @foreach ($eventos_proximos as $evento)
+                                            <div
+                                                class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
+                                                {{-- FECHA (Caja pequeña) --}}
+                                                <div
+                                                    class="bg-white dark:bg-gray-800 p-2 rounded text-center border border-gray-200 dark:border-gray-600 min-w-[45px]">
+                                                    <span
+                                                        class="block text-[10px] text-indigo-500 font-bold uppercase tracking-tighter">
+                                                        {{ \Carbon\Carbon::parse($evento->fecha_inicio)->locale('es')->shortMonthName }}
+                                                    </span>
+                                                    <span
+                                                        class="block text-lg font-bold text-gray-800 dark:text-gray-200 leading-none">
+                                                        {{ \Carbon\Carbon::parse($evento->fecha_inicio)->format('d') }}
+                                                    </span>
+                                                </div>
+
+                                                {{-- DETALLES --}}
+                                                <div class="overflow-hidden">
+                                                    <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 truncate"
+                                                        title="{{ $evento->nombre }}">
+                                                        {{ $evento->nombre }}
+                                                    </h4>
+                                                    <p class="text-[10px] text-gray-500 dark:text-gray-400 truncate">
+                                                        Cierra:
+                                                        {{ \Carbon\Carbon::parse($evento->fecha_fin)->format('d/m') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 @endif
                             </div>
                         </div>
-
-                        <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
-                            <h3 class="text-sm font-bold text-gray-700 dark:text-gray-200 mb-4 uppercase">Eventos
-                                Próximos</h3>
-
-                            @if ($eventos_proximos->isEmpty())
-                                <div class="text-center py-4">
-                                    <p class="text-gray-500 dark:text-gray-400 text-xs">No hay eventos en agenda.</p>
-                                </div>
-                            @else
-                                <div class="space-y-3">
-                                    @foreach ($eventos_proximos as $evento)
-                                        <div
-                                            class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-700">
-                                            {{-- FECHA (Caja pequeña) --}}
-                                            <div
-                                                class="bg-white dark:bg-gray-800 p-2 rounded text-center border border-gray-200 dark:border-gray-600 min-w-[45px]">
-                                                <span
-                                                    class="block text-[10px] text-indigo-500 font-bold uppercase tracking-tighter">
-                                                    {{ \Carbon\Carbon::parse($evento->fecha_inicio)->locale('es')->shortMonthName }}
-                                                </span>
-                                                <span
-                                                    class="block text-lg font-bold text-gray-800 dark:text-gray-200 leading-none">
-                                                    {{ \Carbon\Carbon::parse($evento->fecha_inicio)->format('d') }}
-                                                </span>
-                                            </div>
-
-                                            {{-- DETALLES --}}
-                                            <div class="overflow-hidden">
-                                                <h4 class="text-sm font-bold text-gray-800 dark:text-gray-200 truncate"
-                                                    title="{{ $evento->nombre }}">
-                                                    {{ $evento->nombre }}
-                                                </h4>
-                                                <p class="text-[10px] text-gray-500 dark:text-gray-400 truncate">
-                                                    Cierra:
-                                                    {{ \Carbon\Carbon::parse($evento->fecha_fin)->format('d/m') }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
                     </div>
                 </div>
             @else
-                {{-- ================= MODO SIN EQUIPO ================= --}}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Create Team Card --}}
                         <div
                             class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm hover:shadow-md transition border border-transparent hover:border-green-500 group relative overflow-hidden">
+                            {{-- ... (Content from your previous code) ... --}}
                             <div
                                 class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-green-50 dark:bg-green-900/20 rounded-full opacity-50 transition-transform group-hover:scale-150">
                             </div>
@@ -308,8 +341,10 @@
                             </div>
                         </div>
 
+                        {{-- Join Team Card --}}
                         <div
                             class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm hover:shadow-md transition border border-transparent hover:border-blue-500 group relative overflow-hidden">
+                            {{-- ... (Content from your previous code) ... --}}
                             <div
                                 class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-50 dark:bg-blue-900/20 rounded-full opacity-50 transition-transform group-hover:scale-150">
                             </div>
@@ -381,26 +416,17 @@
         </div>
     </div>
 
-    {{-- SCRIPT CHART.JS (Solo si hay equipo) --}}
+    {{-- Script Gráfico (Mismo de siempre) --}}
     @if ($equipo && $proyecto)
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const ctx = document.getElementById('projectProgressChart').getContext('2d');
-
-                // Datos PHP a JS
                 const labels = @json($chartLabels ?? []);
                 const data = @json($chartData ?? []);
-
-                // Ocultar mensaje si hay datos
                 const totalScore = data.reduce((a, b) => a + b, 0);
-                if (totalScore > 0) {
-                    document.getElementById('no-grades-msg').style.display = 'none';
-                }
-
-                // Colores Dark Mode
-                const textColor = '#cbd5e1'; // Slate-300
+                if (totalScore > 0) document.getElementById('no-grades-msg').style.display = 'none';
+                const textColor = '#cbd5e1';
                 const gridColor = 'rgba(148, 163, 184, 0.2)';
-
                 new Chart(ctx, {
                     type: 'radar',
                     data: {
@@ -412,9 +438,7 @@
                             borderColor: 'rgba(99, 102, 241, 1)',
                             borderWidth: 2,
                             pointBackgroundColor: 'rgba(99, 102, 241, 1)',
-                            pointBorderColor: '#fff',
-                            pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: 'rgba(99, 102, 241, 1)'
+                            pointBorderColor: '#fff'
                         }]
                     },
                     options: {

@@ -1,88 +1,159 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
+// Controladores Generales
+use App\Http\Controllers\ProfileController;
+
+// Controladores Admin
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\EventoController;
+use App\Http\Controllers\Admin\CriterioController as AdminCriterioController;
+use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Admin\EquipoController as AdminEquipoController;
+use App\Http\Controllers\Admin\ProyectoController;
+use App\Http\Controllers\Admin\ResultadosController;
+
+// Controladores Juez
 use App\Http\Controllers\Juez\JuezController;
-use App\Http\Controllers\Participante\EquipoController;
+use App\Http\Controllers\Juez\CriterioController as JuezCriterioController;
+use App\Http\Controllers\Juez\EvaluacionController;
+use App\Http\Controllers\Juez\EquipoController as JuezEquipoController;
+
+// Controladores Participante
 use App\Http\Controllers\Participante\ParticipanteController;
 use App\Http\Controllers\Participante\PerfilController;
+use App\Http\Controllers\Participante\EquipoController as ParticipanteEquipoController;
+use App\Http\Controllers\Participante\AvanceController;
+
+// Middlewares
 use App\Http\Middleware\EnsureParticipantProfileExists;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-//Rutas comunes
-Route::middleware('auth')->group(function () {
+// --- RUTAS COMUNES Y REDIRECCIÓN INTELIGENTE ---
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Perfil de Usuario (Breeze)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Redirección Centralizada (Usa tu lógica del Modelo User)
+    Route::get('/dashboard', function () {
+        // Cargamos el modelo User explícitamente con roles para evitar advertencias de analizadores
+        $user = \App\Models\User::with('roles')->find(\Illuminate\Support\Facades\Auth::id());
+
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        return redirect()->route($user->getDashboardRouteName());
+    })->name('dashboard');
 });
 
-//--RUTAS ADMINISTRADOR--
+// ==========================================
+// MÓDULO ADMINISTRADOR
+// ==========================================
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
+    
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-    //ruta de EVENTOS
-    Route::resource('eventos', 'App\Http\Controllers\Admin\EventoController');
-    //rutas de CRITERIOS
-    Route::post('/eventos/{evento}/criterios', [\App\Http\Controllers\Admin\CriterioController::class, 'store'])->name('eventos.criterios.store');
-    Route::get('/criterios/{criterio}/edit', [\App\Http\Controllers\Admin\CriterioController::class, 'edit'])->name('criterios.edit');
-    Route::put('/criterios/{criterio}', [\App\Http\Controllers\Admin\CriterioController::class, 'update'])->name('criterios.update');
-    Route::delete('/criterios/{criterio}', [\App\Http\Controllers\Admin\CriterioController::class, 'destroy'])->name('criterios.destroy');
-    //ruta de USUARIOS
-    Route::resource('usuarios', \App\Http\Controllers\Admin\UsuarioController::class);
-    //ruta de EQUIPOS
-    Route::resource('equipos', \App\Http\Controllers\Admin\EquipoController::class);
-    Route::post('/equipos/{equipo}/miembros', [\App\Http\Controllers\Admin\EquipoController::class, 'addMember'])->name('equipos.miembros.store');
-    Route::delete('/equipos/{equipo}/miembros/{participante}', [\App\Http\Controllers\Admin\EquipoController::class, 'removeMember'])->name('equipos.miembros.destroy');
-    //ruta de PROYECTOS
-    Route::resource('proyectos', \App\Http\Controllers\Admin\ProyectoController::class);
-    //ruta de RESULTADOS
-    Route::get('/resultados', [\App\Http\Controllers\Admin\ResultadosController::class, 'index'])->name('resultados.index');
-    Route::get('/resultados/constancia/{proyecto}/{posicion}', [\App\Http\Controllers\Admin\ResultadosController::class, 'descargarConstancia'])->name('constancia.descargar');
+
+    // Gestión Principal
+    Route::resource('eventos', EventoController::class);
+    Route::resource('usuarios', UsuarioController::class);
+    Route::resource('equipos', AdminEquipoController::class);
+    Route::resource('proyectos', ProyectoController::class);
+
+    // Gestión de Criterios (Admin)
+    Route::post('/eventos/{evento}/criterios', [AdminCriterioController::class, 'store'])->name('eventos.criterios.store');
+    Route::put('/criterios/{criterio}', [AdminCriterioController::class, 'update'])->name('criterios.update');
+    Route::delete('/criterios/{criterio}', [AdminCriterioController::class, 'destroy'])->name('criterios.destroy');
+    
+    // Gestión de Miembros de Equipo (Admin)
+    Route::post('/equipos/{equipo}/miembros', [AdminEquipoController::class, 'addMember'])->name('equipos.miembros.store');
+    Route::delete('/equipos/{equipo}/miembros/{participante}', [AdminEquipoController::class, 'removeMember'])->name('equipos.miembros.destroy');
+
+    // Resultados y Constancias
+    Route::get('/resultados', [ResultadosController::class, 'index'])->name('resultados.index');
+    Route::get('/resultados/constancia/{proyecto}/{posicion}', [ResultadosController::class, 'descargarConstancia'])->name('constancia.descargar');
 });
-//--RTUAS JUEZ--
+
+// ==========================================
+// MÓDULO JUEZ
+// ==========================================
 Route::middleware(['auth', 'role:Juez'])->prefix('juez')->name('juez.')->group(function () {
+    
+    // Dashboard y Vista de Evento
     Route::get('/dashboard', [JuezController::class, 'index'])->name('dashboard');
+    Route::get('/evento/{evento}', [JuezController::class, 'showEvento'])->name('evento.show');
 
+    // Gestión de Criterios (Juez)
+    Route::resource('criterios', JuezCriterioController::class)->except(['index', 'show', 'create', 'edit']);
 
-    //ruta de CALIFICACIONES
-    Route::get('/evaluar/{proyecto}', [\App\Http\Controllers\Juez\EvaluacionController::class, 'edit'])->name('evaluacion.edit');
-    Route::post('/evaluar/{proyecto}', [\App\Http\Controllers\Juez\EvaluacionController::class, 'store'])->name('evaluacion.store');
+    // Evaluación de Proyectos
+    Route::controller(EvaluacionController::class)->group(function () {
+        Route::get('/evaluar/{proyecto}', 'edit')->name('evaluaciones.edit');
+        Route::post('/evaluar/{proyecto}', 'store')->name('evaluaciones.store');
+    });
+
+    // Gestión de Equipos (Juez - Permisos extendidos)
+    Route::controller(JuezEquipoController::class)->group(function () {
+        Route::get('/equipo/{equipo}/editar', 'edit')->name('equipos.edit');
+        Route::put('/equipo/{equipo}', 'update')->name('equipos.update');
+        Route::post('/equipo/{equipo}/miembro', 'addMember')->name('equipos.addMember');
+        Route::delete('/equipo/{equipo}/miembro/{participante}', 'removeMember')->name('equipos.removeMember');
+    });
 });
 
-//--RUTAS PARTICIPANTE--
+// ==========================================
+// MÓDULO PARTICIPANTE
+// ==========================================
 Route::middleware(['auth', 'role:Participante'])->prefix('participante')->name('participante.')->group(function () {
-    //Rutas para completar el perfil
+    
+    // 1. Registro Inicial (Accesible SIN perfil completo)
     Route::controller(PerfilController::class)->group(function () {
         Route::get('/registro-inicial', 'create')->name('registro.inicial');
         Route::post('/registro-inicial', 'store')->name('registro.store');
     });
 
-    //Rutas protegidas que requieren perfil completo
+    // 2. Área Protegida (Requiere Perfil Completo: Teléfono, Carrera, etc.)
     Route::middleware([EnsureParticipantProfileExists::class])->group(function () {
+        
         Route::get('/dashboard', [ParticipanteController::class, 'index'])->name('dashboard');
-        Route::resource('equipos', \App\Http\Controllers\Participante\EquipoController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
-        Route::controller(\App\Http\Controllers\Participante\EquipoController::class)->group(function () {
-            Route::get('/unirse-equipo', 'showJoinForm')->name('equipos.join'); // Vista
-            Route::post('/unirse-equipo', 'join')->name('equipos.join.store');  // Acción
-        });
-        Route::controller(\App\Http\Controllers\Participante\EquipoController::class)->group(function () {
-            Route::get('/equipo/gestionar', 'edit')->name('equipos.edit');
-            Route::put('/equipo/actualizar/{id}', 'update')->name('equipos.update');
+
+        // Gestión de Equipos (CRUD Básico y Acciones Específicas)
+        Route::resource('equipos', ParticipanteEquipoController::class)->only(['create', 'store', 'edit', 'update']);
+        
+        Route::controller(ParticipanteEquipoController::class)->group(function () {
+            // Unirse a equipo existente
+            Route::get('/unirse-equipo', 'showJoinForm')->name('equipos.join');
+            Route::post('/unirse-equipo', 'join')->name('equipos.join.store');
+            
+            // Gestión de miembros por el líder
             Route::post('/equipo/agregar-miembro', 'addMember')->name('equipos.addMember');
             Route::delete('/equipo/eliminar-miembro/{id}', 'removeMember')->name('equipos.removeMember');
         });
-        Route::controller(\App\Http\Controllers\Participante\AvanceController::class)->group(function () {
+
+        // Bitácora de Avances
+        Route::controller(AvanceController::class)->group(function () {
             Route::get('/proyecto/bitacora', 'index')->name('avances.index');
             Route::post('/proyecto/bitacora', 'store')->name('avances.store');
             Route::delete('/proyecto/bitacora/{id}', 'destroy')->name('avances.destroy');
         });
-        Route::get('/constancia/imprimir/{tipo}', [\App\Http\Controllers\Participante\ParticipanteController::class, 'generarConstancia'])
-        ->name('constancia.imprimir');
+
+        // Descarga de Constancias
+        Route::get('/constancia/imprimir/{tipo}', [ParticipanteController::class, 'generarConstancia'])
+            ->name('constancia.imprimir');
     });
 });
-
 
 require __DIR__ . '/auth.php';

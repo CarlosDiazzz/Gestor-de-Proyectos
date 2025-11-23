@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\CriterioEvaluacion;
+use App\Models\Proyecto;
+use App\Models\Equipo;
 
 class Evento extends Model
 {
@@ -29,4 +31,9 @@ class Evento extends Model
     {
         return $this->hasMany(Constancia::class);
     }
+    public function equipos()
+    {
+        return $this->hasMany(Equipo::class);
+    }
+
 }

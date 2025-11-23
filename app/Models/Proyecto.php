@@ -41,4 +41,8 @@ class Proyecto extends Model
             ->withPivot('perfil_id')
             ->withTimestamps();
     }
+    public function comentarios()
+    {
+        return $this->hasMany(EvaluacionComentario::class);
+    }
 }

@@ -7,49 +7,61 @@ use App\Models\Calificacion;
 use App\Models\Proyecto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EvaluacionController extends Controller
 {
-
     public function edit(Proyecto $proyecto)
     {
-        // Cargar criterios del evento y ver si ya hay calificaciones previas de este juez
-        $proyecto->load(['evento.criterios', 'equipo']);
-        
-        // Obtener calificaciones previas del juez actual para llenar el formulario (si está editando)
-        $calificacionesPrevias = Calificacion::where('proyecto_id', $proyecto->id)
-                                             ->where('juez_user_id', Auth::id())
-                                             ->get()
-                                             ->keyBy('criterio_id');
+        // Cargar criterios del evento y si ya existen calificaciones previas de ESTE juez
+        $proyecto->load(['evento.criterios', 'equipo', 'calificaciones' => function ($q) {
+            $q->where('juez_user_id', Auth::id());
+        }]);
 
-        return view('juez.evaluar', compact('proyecto', 'calificacionesPrevias'));
+        // Mapear calificaciones previas para fácil acceso en la vista (Key: criterio_id => Value: puntos)
+        $calificacionesPrevias = $proyecto->calificaciones->pluck('puntuacion', 'criterio_id')->toArray();
+
+        $comentarioPrevio = \App\Models\EvaluacionComentario::where('proyecto_id', $proyecto->id)
+            ->where('juez_user_id', Auth::id())
+            ->first();
+
+        $comentarioTexto = $comentarioPrevio ? $comentarioPrevio->comentario : '';
+
+        return view('juez.evaluaciones.edit', compact('proyecto', 'calificacionesPrevias', 'comentarioTexto'));
     }
-    
+
     public function store(Request $request, Proyecto $proyecto)
     {
-        $data = $request->validate([
+        $request->validate([
             'puntuaciones' => 'required|array',
-            'puntuaciones.*' => 'required|integer|min:0|max:100', // Validar cada input del array
+            'puntuaciones.*' => 'required|numeric|min:0|max:100',
+            'comentario' => 'nullable|string|max:1000', // Validación del texto
         ]);
 
-        $juezId = Auth::id();
+        try {
+            DB::transaction(function () use ($request, $proyecto) {
+                $juezId = Auth::id();
 
-        // Iteramos sobre el array de puntuaciones [criterio_id => puntos]
-        foreach ($data['puntuaciones'] as $criterioId => $puntos) {
-            
-            // Usamos updateOrCreate para guardar o actualizar si ya existía
-            Calificacion::updateOrCreate(
-                [
-                    'proyecto_id' => $proyecto->id,
-                    'juez_user_id' => $juezId,
-                    'criterio_id' => $criterioId,
-                ],
-                [
-                    'puntuacion' => $puntos
-                ]
-            );
+                // 1. Guardar números (Igual que antes)
+                foreach ($request->puntuaciones as $criterioId => $puntuacion) {
+                    \App\Models\Calificacion::updateOrCreate(
+                        ['proyecto_id' => $proyecto->id, 'juez_user_id' => $juezId, 'criterio_id' => $criterioId],
+                        ['puntuacion' => $puntuacion]
+                    );
+                }
+
+                // 2. GUARDAR COMENTARIO (NUEVO)
+                if ($request->filled('comentario')) {
+                    \App\Models\EvaluacionComentario::updateOrCreate(
+                        ['proyecto_id' => $proyecto->id, 'juez_user_id' => $juezId],
+                        ['comentario' => $request->comentario]
+                    );
+                }
+            });
+
+            return redirect()->route('juez.dashboard')->with('success', 'Evaluación y feedback guardados.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error: ' . $e->getMessage());
         }
-
-        return redirect()->route('juez.dashboard')->with('success', 'Evaluación guardada correctamente.');
     }
 }
