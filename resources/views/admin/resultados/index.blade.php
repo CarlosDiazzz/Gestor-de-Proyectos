@@ -60,16 +60,20 @@
                                                 default => '',
                                             };
                                             $medalla = match ($lugar) {
-                                                1 => '🥇',
-                                                2 => '🥈',
-                                                3 => '🥉',
-                                                default => $lugar . '°',
+                                                1 => asset('images/MedallaOro.ico'),
+                                                2 => asset('images/MedallaPlata.ico'),
+                                                3 => asset('images/MedallaBronce.ico'),
+                                                default => null,
                                             };
                                         @endphp
                                         <tr class="{{ $filaClass }}">
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-xl font-bold text-gray-800 dark:text-gray-200">
-                                                {{ $medalla }}
+                                                @if ($medalla)
+                                                    <img src="{{ $medalla }}" alt="Medalla lugar {{ $lugar }}" class="w-8 h-8 inline-block">
+                                                @else
+                                                    {{ $lugar }}°
+                                                @endif
                                             </td>
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap font-mono font-bold text-indigo-600 dark:text-indigo-400 text-lg">
