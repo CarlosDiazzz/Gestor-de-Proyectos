@@ -11,14 +11,22 @@ use Illuminate\Support\Facades\DB;
 
 class EvaluacionController extends Controller
 {
+    /**
+     * Muestra el formulario de evaluación.
+     * 
+     * Cargar criterios del evento y si ya existen calificaciones previas de ESTE juez.
+     * Mapear calificaciones previas para fácil acceso en la vista (Key: criterio_id => Value: puntos).
+     */
     public function edit(Proyecto $proyecto)
     {
-        // Cargar criterios del evento y si ya existen calificaciones previas de ESTE juez
-        $proyecto->load(['evento.criterios', 'equipo', 'calificaciones' => function ($q) {
-            $q->where('juez_user_id', Auth::id());
-        }]);
+        $proyecto->load([
+            'evento.criterios',
+            'equipo',
+            'calificaciones' => function ($q) {
+                $q->where('juez_user_id', Auth::id());
+            }
+        ]);
 
-        // Mapear calificaciones previas para fácil acceso en la vista (Key: criterio_id => Value: puntos)
         $calificacionesPrevias = $proyecto->calificaciones->pluck('puntuacion', 'criterio_id')->toArray();
 
         $comentarioPrevio = \App\Models\EvaluacionComentario::where('proyecto_id', $proyecto->id)
@@ -30,6 +38,12 @@ class EvaluacionController extends Controller
         return view('juez.evaluaciones.edit', compact('proyecto', 'calificacionesPrevias', 'comentarioTexto'));
     }
 
+    /**
+     * Almacena la evaluación.
+     * 
+     * Guardar números (Igual que antes).
+     * GUARDAR COMENTARIO (NUEVO).
+     */
     public function store(Request $request, Proyecto $proyecto)
     {
         $request->validate([
@@ -42,7 +56,6 @@ class EvaluacionController extends Controller
             DB::transaction(function () use ($request, $proyecto) {
                 $juezId = Auth::id();
 
-                // 1. Guardar números (Igual que antes)
                 foreach ($request->puntuaciones as $criterioId => $puntuacion) {
                     \App\Models\Calificacion::updateOrCreate(
                         ['proyecto_id' => $proyecto->id, 'juez_user_id' => $juezId, 'criterio_id' => $criterioId],
@@ -50,7 +63,6 @@ class EvaluacionController extends Controller
                     );
                 }
 
-                // 2. GUARDAR COMENTARIO (NUEVO)
                 if ($request->filled('comentario')) {
                     \App\Models\EvaluacionComentario::updateOrCreate(
                         ['proyecto_id' => $proyecto->id, 'juez_user_id' => $juezId],

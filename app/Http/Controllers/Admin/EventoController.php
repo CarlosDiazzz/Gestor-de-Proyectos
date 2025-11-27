@@ -64,9 +64,13 @@ class EventoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    /**
+     * Remove the specified resource from storage.
+     * 
+     * Logica de negocio para eliminar un evento: si ya se inicio no se puede eliminar.
+     */
     public function destroy(Evento $evento)
     {
-        //Logica de negocio para eliminar un evento si ya se inicio no se puede eliminar
         $evento->delete();
         return redirect()->route('admin.eventos.index')->with('success', 'Evento eliminado exitosamente.');
     }
