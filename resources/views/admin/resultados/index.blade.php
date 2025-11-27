@@ -60,9 +60,9 @@
                                                 default => '',
                                             };
                                             $medalla = match ($lugar) {
-                                                1 => asset('images/MedallaOro.ico'),
-                                                2 => asset('images/MedallaPlata.ico'),
-                                                3 => asset('images/MedallaBronce.ico'),
+                                                1 => asset('images/MedallaOro2.ico'),
+                                                2 => asset('images/MedallaPlata2.ico'),
+                                                3 => asset('images/MedallaBronce2.ico'),
                                                 default => null,
                                             };
                                         @endphp
