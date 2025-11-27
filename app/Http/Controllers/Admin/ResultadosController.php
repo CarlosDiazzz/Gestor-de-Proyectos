@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 
 class ResultadosController extends Controller
 {
+    /**
+     * Muestra el ranking de proyectos.
+     * 
+     * Redondeamos a 2 decimales.
+     * Ordenar del mejor al peor.
+     */
     public function index(Request $request)
     {
         $eventoId = $request->get('evento_id');
@@ -40,16 +46,21 @@ class ResultadosController extends Controller
                     'id' => $proyecto->id,
                     'nombre' => $proyecto->nombre,
                     'equipo' => $proyecto->equipo->nombre,
-                    'puntaje' => round($totalPuntos, 2), // Redondeamos a 2 decimales
+                    'puntaje' => round($totalPuntos, 2),
                     'integrantes' => $proyecto->equipo->participantes
                 ];
-            })->sortByDesc('puntaje')->values(); // Ordenar del mejor al peor
+            })->sortByDesc('puntaje')->values();
         }
 
         return view('admin.resultados.index', compact('ranking', 'eventos', 'evento'));
     }
 
     // Método para descargar Constancia (Lo implementaremos en el siguiente paso)
+    /**
+     * Método para descargar Constancia.
+     * 
+     * Generamos el PDF usando una vista Blade.
+     */
     public function descargarConstancia($proyectoId, $posicion)
     {
         $proyecto = Proyecto::with(['equipo.participantes.user', 'evento'])->findOrFail($proyectoId);
@@ -61,7 +72,6 @@ class ResultadosController extends Controller
             default => 'PARTICIPACIÓN DESTACADA'
         };
 
-        // Generamos el PDF usando una vista Blade
         $pdf = Pdf::loadView('admin.resultados.pdf', compact('proyecto', 'textoLogro'))
             ->setPaper('a4', 'landscape');
 

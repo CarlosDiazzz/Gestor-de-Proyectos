@@ -22,21 +22,23 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
+    /**
+     * Maneja la solicitud de autenticación entrante y redirige al usuario según su rol (Admin, Juez, Participante).
+     */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        //Logica login segun roles a escoger
         $user = $request->user();
 
-        if($user ->roles->contains('nombre', 'Admin')){
+        if ($user->roles->contains('nombre', 'Admin')) {
             return redirect()->intended(route('admin.dashboard'));
-        }elseif($user ->roles->contains('nombre', 'Juez')){
+        } elseif ($user->roles->contains('nombre', 'Juez')) {
             return redirect()->intended(route('juez.dashboard'));
-        }elseif($user ->roles->contains('nombre', 'Participante')){
-            if(!$user->participante){
+        } elseif ($user->roles->contains('nombre', 'Participante')) {
+            if (!$user->participante) {
                 return redirect()->intended(route('participante.registro.inicial'));
             }
             return redirect()->intended(route('participante.dashboard'));

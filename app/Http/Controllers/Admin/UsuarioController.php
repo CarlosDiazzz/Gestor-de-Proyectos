@@ -55,9 +55,13 @@ class UsuarioController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    /**
+     * Store a newly created resource in storage.
+     * 
+     * Crear el usuario (encriptando la contraseña).
+     */
     public function store(StoreUsuarioRequest $request)
     {
-        // 1. Crear el usuario (encriptando la contraseña)
         $user = User::create([
             'name' => $request->nombre,
             'email' => $request->email,
@@ -73,20 +77,28 @@ class UsuarioController extends Controller
     /**
      * Display the specified resource.
      */
+    /**
+     * Display the specified resource.
+     * 
+     * Reutilizamos la vista de edit o podrías hacer una show aparte.
+     * Por ahora redirigimos a edit para agilizar.
+     */
     public function show(User $usuario)
     {
-        // Reutilizamos la vista de edit o podrías hacer una show aparte
-        // Por ahora redirigimos a edit para agilizar
         return redirect()->route('admin.usuarios.edit', $usuario);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
+    /**
+     * Show the form for editing the specified resource.
+     * 
+     * Cargamos los roles actuales del usuario para marcarlos en el select.
+     */
     public function edit(User $usuario)
     {
         $roles = Rol::all();
-        // Cargamos los roles actuales del usuario para marcarlos en el select
         $usuario->load('roles');
 
         return view('admin.usuarios.edit', compact('usuario', 'roles'));
@@ -95,23 +107,27 @@ class UsuarioController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    /**
+     * Update the specified resource in storage.
+     * 
+     * Preparar datos básicos.
+     * Si escribió contraseña nueva, la encriptamos. Si no, la ignoramos.
+     * Actualizar tabla users.
+     * Sincronizar Rol (Borra los anteriores y pone el nuevo).
+     */
     public function update(UpdateUsuarioRequest $request, User $usuario)
     {
-        // 1. Preparar datos básicos
         $data = [
             'name' => $request->nombre,
             'email' => $request->email,
         ];
 
-        // 2. Si escribió contraseña nueva, la encriptamos. Si no, la ignoramos.
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
 
-        // 3. Actualizar tabla users
         $usuario->update($data);
 
-        // 4. Sincronizar Rol (Borra los anteriores y pone el nuevo)
         $usuario->roles()->sync([$request->rol_id]);
 
         return redirect()->route('admin.usuarios.index')
@@ -121,9 +137,13 @@ class UsuarioController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    /**
+     * Remove the specified resource from storage.
+     * 
+     * Evitar que el admin se borre a sí mismo por error.
+     */
     public function destroy(User $usuario)
     {
-        // Evitar que el admin se borre a sí mismo por error
         if (Auth::id() === $usuario->id) {
             return back()->with('error', 'No puedes eliminar tu propia cuenta.');
         }

@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
+    /**
+     * Muestra el panel de administración con métricas y gráficos.
+     * 
+     * DATOS PARA GRÁFICO 2: Estado de Evaluación de Proyectos (Barras)
+     * Contamos cuántos proyectos tienen calificaciones vs cuántos no.
+     */
     public function index()
     {
         $total_jueces = User::whereHas('roles', fn($q) => $q->where('nombre', 'Juez'))->count();
@@ -20,8 +26,8 @@ class AdminController extends Controller
         $total_proyectos = Proyecto::count();
 
         $eventos_activos = Evento::where('fecha_fin', '>=', now())
-                                 ->orderBy('fecha_inicio', 'asc')
-                                 ->get();
+            ->orderBy('fecha_inicio', 'asc')
+            ->get();
 
         $participantesPorCarrera = DB::table('participantes')
             ->join('carreras', 'participantes.carrera_id', '=', 'carreras.id')
@@ -29,15 +35,13 @@ class AdminController extends Controller
             ->groupBy('carreras.nombre')
             ->pluck('total', 'nombre');
 
-        // 4. DATOS PARA GRÁFICO 2: Estado de Evaluación de Proyectos (Barras)
-        // Contamos cuántos proyectos tienen calificaciones vs cuántos no
         $proyectosEvaluados = Proyecto::has('calificaciones')->count();
         $proyectosPendientes = $total_proyectos - $proyectosEvaluados;
 
         return view('admin.dashboard', compact(
-            'total_jueces', 
-            'total_participantes', 
-            'total_equipos', 
+            'total_jueces',
+            'total_participantes',
+            'total_equipos',
             'eventos_activos',
             'total_proyectos',
             'participantesPorCarrera',

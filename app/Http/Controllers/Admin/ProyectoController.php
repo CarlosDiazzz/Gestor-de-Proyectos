@@ -9,11 +9,13 @@ use Illuminate\Http\Request;
 
 class ProyectoController extends Controller
 {
+    /**
+     * Muestra la lista de proyectos con filtros.
+     */
     public function index(Request $request)
     {
         $query = Proyecto::with(['equipo', 'evento']);
 
-        // Filtros
         if ($request->filled('search')) {
             $query->where('nombre', 'like', '%' . $request->search . '%');
         }
@@ -27,32 +29,36 @@ class ProyectoController extends Controller
         return view('admin.proyectos.index', compact('proyectos', 'eventos'));
     }
 
+    /**
+     * Muestra el detalle de un proyecto.
+     * 
+     * Promedio simple de los jueces (ej: Juez A puso 80, Juez B puso 100 -> Promedio 90).
+     * Sumamos al total (Escala final 0 a 100).
+     */
     public function show(Proyecto $proyecto)
     {
         $proyecto->load(['equipo.participantes', 'evento.criterios', 'calificaciones']);
 
         $calificacionesPorCriterio = $proyecto->calificaciones->groupBy('criterio_id');
-        
+
         $desglosePuntaje = [];
         $puntajeTotal = 0;
 
         foreach ($proyecto->evento->criterios as $criterio) {
             $notas = $calificacionesPorCriterio->get($criterio->id);
-            
+
             if ($notas && $notas->count() > 0) {
-                // Promedio simple de los jueces (ej: Juez A puso 80, Juez B puso 100 -> Promedio 90)
                 $promedioJueces = $notas->avg('puntuacion');
-                
+
                 $puntosObtenidos = ($promedioJueces * $criterio->ponderacion) / 100;
-                
+
                 $desglosePuntaje[] = [
                     'criterio' => $criterio->nombre,
                     'ponderacion' => $criterio->ponderacion,
                     'promedio_jueces' => round($promedioJueces, 1),
                     'puntos_reales' => round(($promedioJueces * ($criterio->ponderacion / 100)), 1)
                 ];
-                
-                // Sumamos al total (Escala final 0 a 100)
+
                 $puntajeTotal += ($promedioJueces * ($criterio->ponderacion / 100));
             } else {
                 $desglosePuntaje[] = [
@@ -85,9 +91,12 @@ class ProyectoController extends Controller
         return redirect()->route('admin.proyectos.show', $proyecto)->with('success', 'Proyecto actualizado.');
     }
 
+    /**
+     * Elimina un proyecto (SoftDelete).
+     */
     public function destroy(Proyecto $proyecto)
     {
-        $proyecto->delete(); // SoftDelete
+        $proyecto->delete();
         return redirect()->route('admin.proyectos.index')->with('success', 'Proyecto eliminado.');
     }
 }

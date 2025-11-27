@@ -10,6 +10,11 @@ use Illuminate\Http\Request;
 
 class EquipoController extends Controller
 {
+    /**
+     * Muestra el formulario de edición de equipo.
+     * 
+     * VALIDACIÓN DE SEGURIDAD (Corregida).
+     */
     public function edit(Equipo $equipo)
     {
         $equipo->load('proyecto.evento');
@@ -18,7 +23,6 @@ class EquipoController extends Controller
             return back()->with('error', 'Error crítico: Este equipo no tiene un proyecto o evento asociado.');
         }
 
-        // 3. VALIDACIÓN DE SEGURIDAD (Corregida)
         if ($equipo->proyecto->evento->fecha_fin < now()) {
             return back()->with('error', 'Este evento ya finalizó, no se pueden editar equipos.');
         }
@@ -50,9 +54,13 @@ class EquipoController extends Controller
         return back()->with('success', 'Nombre del equipo actualizado.');
     }
 
+    /**
+     * Agrega un miembro al equipo.
+     * 
+     * Validar cupo.
+     */
     public function addMember(Request $request, Equipo $equipo)
     {
-        // Validar cupo
         if ($equipo->participantes()->count() >= 5) {
             return back()->with('error', 'El equipo está lleno.');
         }
@@ -76,10 +84,13 @@ class EquipoController extends Controller
         return back()->with('success', 'Participante agregado exitosamente.');
     }
 
-    // Eliminar Miembro (Usando lógica de sucesión de líder)
+    /**
+     * Eliminar Miembro (Usando lógica de sucesión de líder).
+     * 
+     * Usamos el método inteligente del modelo que creamos antes.
+     */
     public function removeMember(Equipo $equipo, $participanteId)
     {
-        // Usamos el método inteligente del modelo que creamos antes
         $equipo->removerIntegrante($participanteId);
 
         return back()->with('success', 'Miembro eliminado. Liderazgo reasignado si fue necesario.');
