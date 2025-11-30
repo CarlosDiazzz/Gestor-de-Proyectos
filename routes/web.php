@@ -77,6 +77,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/eventos/{evento}/criterios', [AdminCriterioController::class, 'store'])->name('eventos.criterios.store');
     Route::put('/criterios/{criterio}', [AdminCriterioController::class, 'update'])->name('criterios.update');
     Route::delete('/criterios/{criterio}', [AdminCriterioController::class, 'destroy'])->name('criterios.destroy');
+    Route::get('/criterios/{criterio}/editar', [AdminCriterioController::class, 'edit'])->name('criterios.edit');
     
     // Gestión de Miembros de Equipo (Admin)
     Route::post('/equipos/{equipo}/miembros', [AdminEquipoController::class, 'addMember'])->name('equipos.miembros.store');

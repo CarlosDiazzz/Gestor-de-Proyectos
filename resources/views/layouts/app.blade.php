@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,36 +13,38 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Dark Mode Init Script -->
     <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia(
-            '(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
         } else {
-            document.documentElement.classList.remove('dark')
+            document.documentElement.classList.remove('dark');
         }
     </script>
 </head>
+<body class="font-sans antialiased" x-data="{ sidebarOpen: false }">
+    
+    <div class="flex h-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
+        
+        <!-- 1. SIDEBAR (Menú Lateral Izquierdo) -->
+        @include('layouts.sidebar')
 
-<body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-        @include('layouts.navigation')
+        <!-- 2. ÁREA PRINCIPAL (Derecha) -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            
+            <!-- 2.1 HEADER (Barra Superior Flotante) -->
+            @include('layouts.header')
 
-        <!-- Page Heading -->
-        @isset($header)
-            <header class="bg-white dark:bg-gray-800 shadow">
-                <div x-data="{ show: false }" x-init="setTimeout(() => show = true, 50)"
-                    class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 transition-all duration-1000 ease-out transform"
-                    :class="show ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'">
-                    {{ $header }}
+            <!-- 2.2 CONTENIDO -->
+            <main>
+                <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                    {{ $slot }}
                 </div>
-            </header>
-        @endisset
-
-        <!-- Page Content -->
-        <main>
-            {{ $slot }}
-        </main>
+            </main>
+            
+        </div>
     </div>
-</body>
 
+</body>
 </html>
