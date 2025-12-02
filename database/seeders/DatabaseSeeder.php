@@ -40,6 +40,7 @@ class DatabaseSeeder extends Seeder
         DB::table('user_rol')->truncate();
         DB::table('equipo_participante')->truncate();
         DB::table('calificaciones')->truncate();
+        DB::table('evento_user')->truncate();
 
         Schema::enableForeignKeyConstraints();
 
@@ -78,6 +79,9 @@ class DatabaseSeeder extends Seeder
             $juez->roles()->attach($rolJuez->id);
         }
 
+        // <<< NEW: Assign Jueces to Eventos >>>
+        $this->call(EventoUserSeeder::class);
+
         // Create Participantes
         $participantes = User::factory(50)->create()->each(function ($user) use ($rolParticipante, $carreras) {
             $user->roles()->attach($rolParticipante->id);
@@ -109,9 +113,11 @@ class DatabaseSeeder extends Seeder
             // Create advances for the project
             Avance::factory(3)->create(['proyecto_id' => $proyecto->id]);
 
-            // Create calificaciones for the project
+            // <<< MODIFIED: Create calificaciones for the project from assigned jueces >>>
             $criterios = CriterioEvaluacion::where('evento_id', $proyecto->evento_id)->get();
-            foreach ($jueces as $juez) {
+            $juecesDelEvento = $proyecto->evento->jueces; // Get jueces assigned to this specific event
+
+            foreach ($juecesDelEvento as $juez) {
                 foreach ($criterios as $criterio) {
                     DB::table('calificaciones')->insert([
                         'proyecto_id' => $proyecto->id,

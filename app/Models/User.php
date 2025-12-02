@@ -83,4 +83,9 @@ class User extends Authenticatable
     {
         return $this->roles->contains('nombre', $roleName);
     }
+
+    public function eventosAsignados()
+    {
+        return $this->belongsToMany(Evento::class, 'evento_user', 'user_id', 'evento_id');
+    }
 }

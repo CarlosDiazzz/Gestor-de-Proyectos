@@ -13,17 +13,18 @@ class JuezController extends Controller
     /**
      * Muestra el dashboard del juez.
      * 
-     * Obtener eventos activos.
-     * Idealmente filtraríamos por $user->eventosAsignados, pero usamos todos los activos por ahora.
+     * Obtener eventos activos asignados al juez.
      * Calcular métricas globales para el Juez.
      */
     public function index()
     {
-        $eventos = Evento::where('fecha_fin', '>=', now())
+        $juez = Auth::user();
+        $eventos = $juez->eventosAsignados()
+            ->where('fecha_fin', '>=', now())
             ->withCount('proyectos')
             ->get();
 
-        $juezId = Auth::id();
+        $juezId = $juez->id;
         $totalProyectos = 0;
         $proyectosEvaluados = 0;
 
@@ -43,15 +44,22 @@ class JuezController extends Controller
         return view('juez.dashboard', compact('eventos', 'totalProyectos', 'proyectosEvaluados', 'pendientes'));
     }
 
-    // Método nuevo para ver el detalle de UN evento (Tu tabla de proyectos va aquí)
     /**
-     * Método nuevo para ver el detalle de UN evento (Tu tabla de proyectos va aquí).
+     * Muestra el detalle de UN evento asignado.
      * 
      * CORRECCIÓN: Cargamos 'proyectos' y sus relaciones (equipo y calificaciones).
+     * NUEVO: Se verifica que el juez esté asignado al evento.
      */
     public function showEvento(Evento $evento)
     {
-        $juezId = Auth::id();
+        $juez = Auth::user();
+        
+        // Verificamos si el juez está asignado a este evento
+        if (!$juez->eventosAsignados->contains($evento)) {
+            abort(403, 'No tienes permiso para ver este evento.');
+        }
+
+        $juezId = $juez->id;
 
         $evento->load([
             'proyectos.equipo.participantes',

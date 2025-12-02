@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreEventoRequest;
 use App\Http\Requests\Admin\UpdateEventoRequest;
 use App\Models\Evento;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class EventoController extends Controller
@@ -24,7 +25,8 @@ class EventoController extends Controller
      */
     public function create()
     {
-        return view('admin.eventos.create');
+        $jueces = User::whereHas('roles', fn($q) => $q->where('nombre', 'Juez'))->get();
+        return view('admin.eventos.create', compact('jueces'));
     }
 
     /**
@@ -32,7 +34,8 @@ class EventoController extends Controller
      */
     public function store(StoreEventoRequest $request)
     {
-        Evento::create($request->validated());
+        $evento = Evento::create($request->validated());
+        $evento->jueces()->attach($request->input('jueces', []));
         return redirect()->route('admin.eventos.index')->with('success', 'Evento creado exitosamente.');
     }
 
@@ -49,7 +52,8 @@ class EventoController extends Controller
      */
     public function edit(Evento $evento)
     {
-        return view('admin.eventos.edit', compact('evento'));
+        $jueces = User::whereHas('roles', fn($q) => $q->where('nombre', 'Juez'))->get();
+        return view('admin.eventos.edit', compact('evento', 'jueces'));
     }
 
     /**
@@ -58,6 +62,7 @@ class EventoController extends Controller
     public function update(UpdateEventoRequest $request, Evento $evento)
     {
         $evento->update($request->validated());
+        $evento->jueces()->sync($request->input('jueces', []));
         return redirect()->route('admin.eventos.index')->with('success', 'Evento actualizado exitosamente.');
     }
 

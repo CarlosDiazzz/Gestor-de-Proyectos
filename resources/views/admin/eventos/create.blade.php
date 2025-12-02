@@ -52,6 +52,22 @@
                             <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                         </div>
 
+                        {{-- Asignar Jueces --}}
+                        <div>
+                            <x-input-label for="jueces" value="Asignar Jueces" class="mb-2 font-bold" />
+                            <select name="jueces[]" id="jueces" multiple
+                                class="w-full rounded-xl border-gray-300 dark:bg-gray-900 dark:border-gray-600 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 shadow-sm p-4 text-sm">
+                                @foreach ($jueces as $juez)
+                                    <option value="{{ $juez->id }}" 
+                                        {{ in_array($juez->id, old('jueces', [])) ? 'selected' : '' }}>
+                                        {{ $juez->name }} ({{ $juez->email }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Mantén presionada la tecla Ctrl (o Cmd en Mac) para seleccionar varios jueces.</p>
+                            <x-input-error :messages="$errors->get('jueces')" class="mt-2" />
+                        </div>
+
                         {{-- Fechas (Grid 2 Columnas) --}}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             

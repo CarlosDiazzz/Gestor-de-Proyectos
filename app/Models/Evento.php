@@ -36,4 +36,9 @@ class Evento extends Model
         return $this->hasMany(Equipo::class);
     }
 
+    public function jueces()
+    {
+        return $this->belongsToMany(User::class, 'evento_user', 'evento_id', 'user_id');
+    }
+
 }

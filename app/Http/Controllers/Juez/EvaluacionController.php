@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Juez;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Juez\EvaluarProyectoRequest;
 use App\Models\Calificacion;
 use App\Models\Proyecto;
 use Illuminate\Http\Request;
@@ -19,18 +20,24 @@ class EvaluacionController extends Controller
      */
     public function edit(Proyecto $proyecto)
     {
+        // <<< NEW: Manual authorization for edit method >>>
+        $user = Auth::user();
+        if (!$user->hasRole('Juez') || !$user->eventosAsignados->contains($proyecto->evento)) {
+            abort(403, 'No tienes permiso para evaluar proyectos de este evento.');
+        }
+
         $proyecto->load([
             'evento.criterios',
             'equipo',
-            'calificaciones' => function ($q) {
-                $q->where('juez_user_id', Auth::id());
+            'calificaciones' => function ($q) use ($user) {
+                $q->where('juez_user_id', $user->id);
             }
         ]);
 
         $calificacionesPrevias = $proyecto->calificaciones->pluck('puntuacion', 'criterio_id')->toArray();
 
         $comentarioPrevio = \App\Models\EvaluacionComentario::where('proyecto_id', $proyecto->id)
-            ->where('juez_user_id', Auth::id())
+            ->where('juez_user_id', $user->id)
             ->first();
 
         $comentarioTexto = $comentarioPrevio ? $comentarioPrevio->comentario : '';
@@ -41,32 +48,26 @@ class EvaluacionController extends Controller
     /**
      * Almacena la evaluación.
      * 
-     * Guardar números (Igual que antes).
-     * GUARDAR COMENTARIO (NUEVO).
+     * Usamos EvaluarProyectoRequest que maneja la autorización y validación.
      */
-    public function store(Request $request, Proyecto $proyecto)
+    public function store(EvaluarProyectoRequest $request, Proyecto $proyecto)
     {
-        $request->validate([
-            'puntuaciones' => 'required|array',
-            'puntuaciones.*' => 'required|numeric|min:0|max:100',
-            'comentario' => 'nullable|string|max:1000', // Validación del texto
-        ]);
-
         try {
             DB::transaction(function () use ($request, $proyecto) {
                 $juezId = Auth::id();
+                $validated = $request->validated();
 
-                foreach ($request->puntuaciones as $criterioId => $puntuacion) {
-                    \App\Models\Calificacion::updateOrCreate(
+                foreach ($validated['puntuaciones'] as $criterioId => $puntuacion) {
+                    Calificacion::updateOrCreate(
                         ['proyecto_id' => $proyecto->id, 'juez_user_id' => $juezId, 'criterio_id' => $criterioId],
                         ['puntuacion' => $puntuacion]
                     );
                 }
 
-                if ($request->filled('comentario')) {
+                if (isset($validated['comentario'])) {
                     \App\Models\EvaluacionComentario::updateOrCreate(
                         ['proyecto_id' => $proyecto->id, 'juez_user_id' => $juezId],
-                        ['comentario' => $request->comentario]
+                        ['comentario' => $validated['comentario']]
                     );
                 }
             });
