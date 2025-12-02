@@ -58,7 +58,12 @@
                                         </span>
                                     </td>
                                     <td class="py-5 px-4">
-                                        <p class="text-gray-800 dark:text-white font-medium">{{ $carrera->nombre }}</p>
+                                        <div class="flex items-center gap-3">
+                                            <div class="h-10 w-10 rounded-full bg-indigo-50 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-lg overflow-hidden shrink-0">
+                                                {{ strtoupper(substr($carrera->nombre, 0, 1)) }}
+                                            </div>
+                                            <p class="text-gray-800 dark:text-white font-medium">{{ $carrera->nombre }}</p>
+                                        </div>
                                     </td>
                                     <td class="py-5 px-4">
                                         <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
