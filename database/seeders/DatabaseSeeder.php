@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
 
 
         // Create Carreras and Eventos
-        $carreras = Carrera::factory(5)->create();
+        $carreras = Carrera::factory(29)->create();
         $eventos = Evento::factory(3)->create();
 
         // Create Criterios for Eventos
