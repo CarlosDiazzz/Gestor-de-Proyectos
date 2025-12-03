@@ -414,7 +414,7 @@
                 </svg>
             </div>
             <h3
-                class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                class="text-xl font-bold text-gray-900 dark:text-white mb-2 pr-16 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 Crear un Nuevo Equipo</h3>
             <p class="text-gray-500 dark:text-gray-400 text-sm mb-16">Registra tu idea de
                 proyecto,
