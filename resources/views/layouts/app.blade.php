@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,16 +24,17 @@
         }
     </script>
 </head>
+
 <body class="font-sans antialiased" x-data="{ sidebarOpen: false }">
-    
+
     <div class="flex h-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
-        
+
         <!-- 1. SIDEBAR (Menú Lateral Izquierdo) -->
         @include('layouts.sidebar')
 
         <!-- 2. ÁREA PRINCIPAL (Derecha) -->
         <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-            
+
             <!-- 2.1 HEADER (Barra Superior Flotante) -->
             @include('layouts.header')
 
@@ -42,9 +44,14 @@
                     {{ $slot }}
                 </div>
             </main>
-            
+
         </div>
     </div>
 
+    @if(auth()->user()?->hasRole('Participante'))
+        <x-help-widget />
+    @endif
+
 </body>
+
 </html>
