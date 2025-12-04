@@ -38,6 +38,9 @@ class ParticipanteController extends Controller
                 $solicitudes_pendientes = $equipo->solicitudesPendientes()
                     ->with(['participante.user', 'participante.carrera'])
                     ->get();
+                    
+                // Log para debug
+                \Log::info('Dashboard: Lider ' . $lider->user->name . ' con ' . $solicitudes_pendientes->count() . ' solicitudes pendientes');
             }
         }
 
