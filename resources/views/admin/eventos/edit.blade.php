@@ -56,20 +56,51 @@
                         {{-- Asignar Jueces --}}
                         <div>
                             <x-input-label for="jueces" value="Asignar Jueces" class="mb-2 font-bold" />
-                            <select name="jueces[]" id="jueces" multiple
-                                class="w-full rounded-xl border-gray-300 dark:bg-gray-900 dark:border-gray-600 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 shadow-sm p-4 text-sm">
-                                @php
-                                    $assigned_jueces = old('jueces', $evento->jueces->pluck('id')->toArray());
-                                @endphp
+                            @php
+                                $assigned_jueces = old('jueces', $evento->jueces->pluck('id')->toArray());
+                            @endphp
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                 @foreach ($jueces as $juez)
-                                    <option value="{{ $juez->id }}" 
-                                        {{ in_array($juez->id, $assigned_jueces) ? 'selected' : '' }}>
-                                        {{ $juez->name }} ({{ $juez->email }})
-                                    </option>
+                                    <div>
+                                        <input type="checkbox"
+                                            id="juez-{{ $juez->id }}"
+                                            name="jueces[]"
+                                            value="{{ $juez->id }}"
+                                            class="sr-only peer"
+                                            {{ in_array($juez->id, $assigned_jueces) ? 'checked' : '' }}
+                                            aria-checked="{{ in_array($juez->id, $assigned_jueces) ? 'true' : 'false' }}" />
+
+                                        <label for="juez-{{ $juez->id }}"
+                                            tabindex="0"
+                                            class="flex items-center justify-between gap-3 p-3 rounded-xl border transition-colors
+                                                   bg-white text-gray-800 border-gray-200
+                                                   dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700
+                                                   hover:shadow-sm
+                                                   peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600
+                                                   focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                                            <div class="flex items-center gap-3 min-w-0">
+                                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-sm font-bold text-gray-700 dark:text-gray-200">
+                                                    {{ strtoupper(substr($juez->name,0,1)) }}
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="font-semibold text-sm truncate">{{ $juez->name }}</div>
+                                                    <div class="text-xs truncate text-gray-500 dark:text-gray-400">{{ $juez->email }}</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-2 ml-2">
+                                                <span class="hidden text-xs text-gray-400 dark:text-gray-300 peer-checked:block peer-checked:text-white/90">Seleccionado</span>
+                                                <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-300 hidden peer-checked:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </div>
+                                        </label>
+                                    </div>
                                 @endforeach
-                            </select>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Mantén presionada la tecla Ctrl (o Cmd en Mac) para seleccionar varios jueces.</p>
-                            <x-input-error :messages="$errors->get('jueces')" class="mt-2" />
+                            </div>
+
+                             <x-input-error :messages="$errors->get('jueces')" class="mt-2" />
                         </div>
 
                         {{-- Fechas (Grid 2 Columnas) --}}
@@ -93,7 +124,6 @@
                             <div>
                                 <x-input-label for="fecha_fin" value="Cierre (Fecha y Hora)" class="mb-2 font-bold" />
                                 <div class="relative">
-                                    {{-- CORRECCIÓN: datetime-local, formato correcto y min="now" --}}
                                     <input type="date" id="fecha_fin" name="fecha_fin" 
                                         value="{{ old('fecha_fin', \Carbon\Carbon::parse($evento->fecha_fin)->format('Y-m-d')) }}"
                                         min="{{ now()->format('Y-m-d') }}"
