@@ -24,94 +24,114 @@ function initTrophy3D() {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-    camera.position.set(0, 1, 8); // Cámara más alejada para evitar recortes
+    camera.position.set(0, 1, 8);
     camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
 
-    // Iluminación mejorada
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+    // Iluminación mejorada para resaltar el dorado
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffe066, 3); // Luz dorada más intensa
-    dirLight.position.set(5, 5, 5);
+    const dirLight = new THREE.DirectionalLight(0xfff0dd, 4);
+    dirLight.position.set(5, 10, 7);
+    dirLight.castShadow = true;
     scene.add(dirLight);
 
-    const spotLight = new THREE.SpotLight(0xffffff, 5);
-    spotLight.position.set(0, 10, 0);
-    spotLight.angle = Math.PI / 4;
-    spotLight.penumbra = 0.5;
-    scene.add(spotLight);
+    const pointLight = new THREE.PointLight(0xffd700, 2, 10);
+    pointLight.position.set(-2, 2, 2);
+    scene.add(pointLight);
 
     // Grupo del Trofeo
     const trophyGroup = new THREE.Group();
 
-    // Material Dorado Mejorado
-    const goldMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffd700,
-        metalness: 1,
-        roughness: 0.15, // Más brillante
-        emissive: 0x332200,
-        emissiveIntensity: 0.2
+    // Material Dorado Premium (Physical Material)
+    const goldMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0xffcc00,
+        metalness: 1.0,
+        roughness: 0.2,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.1,
+        emissive: 0x221100,
+        emissiveIntensity: 0.2,
+        reflectivity: 1.0
     });
 
-    // Base
-    const baseGeo = new THREE.CylinderGeometry(1.2, 1.4, 0.3, 32);
+    // Base (Más detallada)
+    const baseGeo = new THREE.CylinderGeometry(1.4, 1.6, 0.4, 64);
     const base = new THREE.Mesh(baseGeo, goldMaterial);
-    base.position.y = -1.5;
+    base.position.y = -1.8;
     trophyGroup.add(base);
 
-    const baseGeo2 = new THREE.CylinderGeometry(0.8, 1.2, 0.3, 32);
+    const baseGeo2 = new THREE.CylinderGeometry(1.0, 1.4, 0.4, 64);
     const base2 = new THREE.Mesh(baseGeo2, goldMaterial);
-    base2.position.y = -1.2;
+    base2.position.y = -1.4;
     trophyGroup.add(base2);
 
-    // Tallo
-    const stemGeo = new THREE.CylinderGeometry(0.3, 0.5, 1.5, 32);
+    // Tallo (Con curvas)
+    const stemGeo = new THREE.CylinderGeometry(0.4, 0.6, 1.8, 32);
     const stem = new THREE.Mesh(stemGeo, goldMaterial);
     stem.position.y = -0.3;
     trophyGroup.add(stem);
 
-    // Copa
-    const cupGeo = new THREE.SphereGeometry(1.5, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2);
+    // Anillo decorativo en el tallo
+    const ringGeo = new THREE.TorusGeometry(0.5, 0.1, 16, 100);
+    const ring = new THREE.Mesh(ringGeo, goldMaterial);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = -0.3;
+    trophyGroup.add(ring);
+
+    // Copa (Más suave)
+    const cupGeo = new THREE.SphereGeometry(1.6, 64, 64, 0, Math.PI * 2, 0, Math.PI * 0.65);
     const cup = new THREE.Mesh(cupGeo, goldMaterial);
     cup.rotation.x = Math.PI;
-    cup.position.y = 1.2;
+    cup.position.y = 1.3;
+    cup.material.side = THREE.DoubleSide;
     trophyGroup.add(cup);
 
-    // Asas (Torus)
-    const handleGeo = new THREE.TorusGeometry(0.8, 0.1, 16, 100, Math.PI);
+    // Asas (Más elegantes)
+    const handlePath = new THREE.Path();
+    handlePath.moveTo(0, 0);
+    handlePath.bezierCurveTo(1.5, 0.5, 1.5, 2.5, 0, 3);
+
+    const handleGeo = new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3([
+            new THREE.Vector3(1.4, 0.5, 0),
+            new THREE.Vector3(2.2, 1.5, 0),
+            new THREE.Vector3(1.4, 2.5, 0)
+        ]),
+        64, 0.15, 16, false
+    );
 
     const handle1 = new THREE.Mesh(handleGeo, goldMaterial);
-    handle1.position.set(-1.5, 1.2, 0);
-    handle1.rotation.z = Math.PI / 2;
     trophyGroup.add(handle1);
 
     const handle2 = new THREE.Mesh(handleGeo, goldMaterial);
-    handle2.position.set(1.5, 1.2, 0);
-    handle2.rotation.z = -Math.PI / 2;
+    handle2.rotation.y = Math.PI;
     trophyGroup.add(handle2);
 
-    // Inclinar el trofeo ligeramente
-    trophyGroup.rotation.z = 0.1;
+    // Inclinación inicial
+    trophyGroup.rotation.z = 0.15;
     trophyGroup.rotation.x = 0.1;
 
     scene.add(trophyGroup);
 
-    // Animación
+    // Animación de flotación y rotación
     gsap.to(trophyGroup.rotation, {
-        y: Math.PI * 2 + 0.1, // Mantener el offset
-        duration: 12,
+        y: Math.PI * 2 + 0.15,
+        duration: 15,
         ease: "none",
         repeat: -1
     });
 
     gsap.to(trophyGroup.position, {
-        y: 0.3,
-        duration: 2.5,
+        y: 0.4,
+        duration: 3,
         ease: "sine.inOut",
         yoyo: true,
         repeat: -1
@@ -147,7 +167,6 @@ function initParticles() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
 
-    // Crear textura circular difuminada programáticamente
     const canvasTexture = document.createElement('canvas');
     canvasTexture.width = 32;
     canvasTexture.height = 32;
@@ -199,86 +218,122 @@ function initParticles() {
 // ============================================
 // ANIMACIÓN DEL LIBRO
 // ============================================
-// ============================================
-// ANIMACIÓN DEL LIBRO
-// ============================================
 function initBookAnimation() {
     if (!document.getElementById('book-section')) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
-    const bookSection = document.getElementById('book-section');
     const bookContainer = document.getElementById('book-container');
     const bookCover = document.getElementById('book-cover');
-    const bookPages = document.getElementById('book-pages');
-    const slides = gsap.utils.toArray('.book-slide');
+    const page1 = document.getElementById('page-1');
+    const page2 = document.getElementById('page-2');
+    const bookControls = document.getElementById('book-controls');
+    const bookText = document.getElementById('book-text');
 
-    if (!bookContainer || !bookCover || !bookPages) return;
+    if (!bookContainer || !bookCover || !page1 || !page2) return;
 
-    // Inicializar estado
-    gsap.set(bookCover, { rotationY: 0, transformOrigin: "right center", transformStyle: "preserve-3d" });
-    gsap.set(bookPages, { rotationY: 0, x: 0, transformOrigin: "left center", transformStyle: "preserve-3d" });
+    // 1. CONFIGURACIÓN INICIAL (Estado Hero)
+    // El libro empieza fijo en el fondo, inclinado y semitransparente
+    // Ajustado para estar "detrás" del trofeo visualmente
+    gsap.set(bookContainer, {
+        position: 'fixed',
+        top: '20%', // Un poco más arriba para asomar detrás del trofeo
+        left: '50%',
+        xPercent: -50,
+        yPercent: -50,
+        rotationX: 30,
+        rotationY: -10,
+        rotationZ: -5,
+        scale: 0.5, // Más pequeño al inicio
+        opacity: 0, // Empieza invisible para evitar flash
+        zIndex: 0,
+        filter: 'blur(4px)'
+    });
 
-    // Ocultar todos los slides excepto el primero inicialmente
-    gsap.set(slides, { opacity: 0 });
-    gsap.set(slides[0], { opacity: 1 });
+    // Configuración de páginas y cubierta para rotación realista
+    const pages = [bookCover, page1, page2];
+    gsap.set(pages, {
+        rotationY: 0,
+        transformOrigin: "left center",
+        transformStyle: "preserve-3d"
+    });
 
-    // Timeline principal con Pinning
-    const tl = gsap.timeline({
+    // Aparecer suavemente en el Hero (Fade In inicial)
+    gsap.to(bookContainer, { opacity: 0.4, duration: 1, delay: 0.5 });
+
+    // 2. FASE 1: TRANSICIÓN HERO -> BOOK SECTION
+    // Al hacer scroll, el libro viaja, se endereza y se vuelve opaco
+    const transitionTl = gsap.timeline({
         scrollTrigger: {
             trigger: "#book-section",
-            start: "top top", // Empezar cuando la sección toque el top
-            end: "+=3000", // Duración del scroll pinned (3000px)
-            pin: true, // Pinea la sección
+            start: "top bottom",
+            end: "center center",
             scrub: 1,
-            markers: false,
+            immediateRender: false
+        }
+    });
+
+    transitionTl
+        .to(bookContainer, {
+            top: '50%',
+            rotationX: 0,
+            rotationY: 0,
+            rotationZ: 0,
+            scale: 1,
+            opacity: 1,
+            filter: 'blur(0px)',
+            zIndex: 40,
+            ease: "power2.inOut"
+        })
+        .to([bookText, bookControls], { opacity: 1, duration: 0.5 }, "-=0.5");
+
+    // 3. FASE 2: APERTURA Y NAVEGACIÓN (PINNED)
+    const bookTl = gsap.timeline({
+        scrollTrigger: {
+            trigger: "#book-section",
+            start: "center center",
+            end: "+=4000", // Scroll largo para leer cómodamente
+            pin: true,
+            scrub: 1,
             anticipatePin: 1
         }
     });
 
-    // 1. Abrir el libro
-    tl.to(bookContainer, { y: 0, duration: 1, ease: "power2.out" })
-        .to(bookCover, { rotationY: -180, duration: 2, ease: "power2.inOut" }, "<") // Abrir completamente
-        .to(bookPages, { rotationY: 0, duration: 2, ease: "power2.out" }, "<0.5")
-        .to(bookCover, { boxShadow: "0 0 50px rgba(255, 215, 0, 0.3)", duration: 1 }, "<");
-
-    // 2. Ciclo de Slides (Admin -> Juez -> Participante)
-    // Slide 1 ya está visible.
-
-    // 2. Ciclo de Slides (Efecto de pasar página)
-    // Inicializar slides: todos en origen, pero con rotación si es necesario
-    gsap.set(slides, { transformOrigin: "left center", backfaceVisibility: "hidden" });
-
-    // Transición a Slide 2 (Juez)
-    // Slide 1 se voltea hacia la izquierda (desaparece)
-    // Slide 2 entra (ya estaba ahí, solo aseguramos visibilidad)
-
-    // Animación más compleja: Simular pasar página
-    // Slide 1 se va
-    tl.to(slides[0], { opacity: 0, rotationY: -90, duration: 1, ease: "power2.in" }, "+=0.5")
-        .fromTo(slides[1],
-            { opacity: 0, rotationY: 90 },
-            { opacity: 1, rotationY: 0, duration: 1, ease: "power2.out" }, "<0.5"); // Solapamiento para efecto fluido
-
-    // Transición a Slide 3 (Participante)
-    tl.to(slides[1], { opacity: 0, rotationY: -90, duration: 1, ease: "power2.in" }, "+=1")
-        .fromTo(slides[2],
-            { opacity: 0, rotationY: 90 },
-            { opacity: 1, rotationY: 0, duration: 1, ease: "power2.out" }, "<0.5");
-
-    // Esperar un poco en el último slide
-    tl.to({}, { duration: 1 });
-
-    // 3. Animación de Salida (Desaparición completa)
-    tl.to(bookSection, {
-        opacity: 0,
-        scale: 0.9,
-        filter: "blur(10px)",
+    // Paso A: Abrir la Portada
+    bookTl.to(bookCover, {
+        rotationY: -180,
         duration: 2,
+        ease: "power2.inOut"
+    });
+    // Eliminado el desplazamiento xPercent para mantener el lomo centrado
+
+    // Paso B: Pasar Página 1 (Admin -> Juez)
+    bookTl.to(page1, {
+        rotationY: -180,
+        duration: 2,
+        ease: "power2.inOut"
+    }, "+=0.5");
+
+    // Paso C: Pasar Página 2 (Participante -> Final)
+    bookTl.to(page2, {
+        rotationY: -180,
+        duration: 2,
+        ease: "power2.inOut"
+    }, "+=0.5");
+
+    // Mantener el final un momento
+    bookTl.to({}, { duration: 1 });
+
+    // 4. FASE 3: SALIDA
+    bookTl.to(bookContainer, {
+        opacity: 0,
+        scale: 1.1,
+        filter: 'blur(10px)',
+        duration: 1.5,
         ease: "power2.in"
     });
 
-    console.log('Book animation initialized with pinning and slides');
+    console.log('Realistic Book Animation Initialized');
     ScrollTrigger.refresh();
 }
 

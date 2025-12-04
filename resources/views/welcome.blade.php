@@ -179,8 +179,9 @@
                     <img src="{{ asset('images/LogoOscuro.ico') }}" alt="GesPro Logo Dark"
                         class="w-full h-full object-contain hidden dark:block animate-entrance">
                 </div>
-                <span
-                    class="font-bold text-2xl tracking-tight dark:text-white group-hover:text-indigo-500 transition-colors duration-300">GesPro</span>
+                <span class="font-bold text-4xl tracking-tight transition-colors duration-300">
+                    <span class="text-purple-600">Ges</span><span class="text-gray-900 dark:text-white">Pro</span>
+                </span>
             </div>
 
             <div class="flex items-center gap-4">
@@ -217,7 +218,101 @@
         </div>
 
         {{-- HERO SECTION --}}
-        <section class="min-h-screen flex items-center justify-center">
+        <section class="min-h-screen flex items-center justify-center relative overflow-hidden">
+             {{-- ELEMENTO LIBRO (Inicialmente en el fondo del Hero) --}}
+            <div id="book-container" class="absolute top-1/4 left-1/2 transform -translate-x-1/2 -z-10 w-full max-w-4xl h-[500px] perspective-1000 opacity-30 blur-sm">
+                
+                {{-- Contraportada (Base estática derecha) --}}
+                <div id="book-back-cover" class="absolute left-1/2 w-[45%] h-full bg-gradient-to-l from-blue-900 to-indigo-900 dark:from-gray-900 dark:to-black rounded-r-xl shadow-2xl border-l-2 border-gray-700 z-0"></div>
+
+                {{-- Páginas (Stack) --}}
+                <div id="book-pages-stack" class="absolute left-1/2 w-[43%] h-[96%] top-[2%] z-10 preserve-3d origin-left">
+                    
+                    {{-- Página 2 (Participante) --}}
+                    <div id="page-2" class="book-page absolute inset-0 preserve-3d origin-left z-10">
+                        {{-- Frente Página 2 (Derecha inicial) --}}
+                        <div class="page-front absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-r-lg shadow-md">
+                            <div class="flex items-center mb-6">
+                                <div class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-lg text-white">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800">Participante</h3>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-600 mb-2">Resultados Automáticos</h4>
+                            <p class="text-gray-600 leading-relaxed">
+                                Generación automática de rankings, podios y constancias. Acceso inmediato a tus evaluaciones y feedback.
+                            </p>
+                        </div>
+                        {{-- Reverso Página 2 (Izquierda al girar) --}}
+                        <div class="page-back absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-l-lg shadow-md" style="transform: rotateY(180deg);">
+                            <div class="text-center">
+                                <h3 class="text-3xl font-bold text-gray-800 mb-4">¡Únete Ahora!</h3>
+                                <p class="text-gray-600 mb-8">Forma parte de la innovación académica.</p>
+                                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto text-indigo-600">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Página 1 (Admin/Juez) --}}
+                    <div id="page-1" class="book-page absolute inset-0 preserve-3d origin-left z-20">
+                        {{-- Frente Página 1 (Derecha inicial) --}}
+                        <div class="page-front absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-r-lg shadow-md">
+                            <div class="flex items-center mb-6">
+                                <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-lg text-white">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800">Administrador</h3>
+                            </div>
+                            <h4 class="text-lg font-semibold text-blue-600 mb-2">Equipos Dinámicos</h4>
+                            <p class="text-gray-600 leading-relaxed">
+                                Fomenta la colaboración creando equipos multidisciplinarios. Gestión total de usuarios, roles y eventos académicos.
+                            </p>
+                        </div>
+                        {{-- Reverso Página 1 (Izquierda al girar) --}}
+                        <div class="page-back absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-l-lg shadow-md" style="transform: rotateY(180deg);">
+                            <div class="flex items-center mb-6">
+                                <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-lg text-white">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800">Juez</h3>
+                            </div>
+                            <h4 class="text-lg font-semibold text-purple-600 mb-2">Evaluación Real</h4>
+                            <p class="text-gray-600 leading-relaxed">
+                                Sistema de rúbricas digital. Evalúa proyectos asignados y proporciona feedback instantáneo a los participantes.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Cubierta del libro (Frente) -->
+                <div id="book-cover"
+                    class="absolute left-1/2 w-[45%] h-full z-30 origin-left preserve-3d">
+                    
+                    {{-- Frente de la portada --}}
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-indigo-900 dark:from-gray-900 dark:to-black rounded-r-xl shadow-2xl border-l-4 border-amber-600 backface-hidden p-8">
+                         <div class="h-full border-4 border-amber-500/30 rounded-lg p-6 flex flex-col justify-between">
+                            <div>
+                                <h2 class="text-4xl font-bold text-amber-500 mb-4 font-serif">GesPro</h2>
+                                <div class="w-20 h-1 bg-amber-400 mb-6"></div>
+                                <p class="text-blue-200 text-lg">Manual de Usuario</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-white text-2xl font-semibold">2025</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Reverso de la portada (Visible al abrir) --}}
+                    <div class="absolute inset-0 bg-blue-900 rounded-l-xl shadow-inner backface-hidden p-8 flex flex-col justify-center" style="transform: rotateY(180deg);">
+                        <h3 class="text-2xl font-bold text-white mb-4 text-center">Bienvenido</h3>
+                        <p class="text-blue-100 text-center">Explora los módulos del sistema.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="max-w-7xl mx-auto px-6 pt-20 pb-16 lg:pt-32 relative z-10 w-full">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     {{-- Contenido principal --}}
@@ -254,7 +349,7 @@
                     </div>
 
                     {{-- Contenedor del modelo 3D del Trofeo --}}
-                    <div class="relative h-[500px] w-full hidden lg:block perspective-1000">
+                    <div class="relative h-[500px] w-full hidden lg:block perspective-1000 z-20">
                         {{-- Canvas flotante sin contenedor visible --}}
                         <canvas id="trophy-canvas" class="w-full h-full object-contain drop-shadow-2xl"></canvas>
 
@@ -270,209 +365,22 @@
             </div>
         </section>
 
-        {{-- SECCIÓN DEL LIBRO ANIMADO --}}
+        {{-- SECCIÓN DEL LIBRO ANIMADO (Placeholder para el scroll) --}}
         <section id="book-section" class="min-h-screen py-20 flex items-center justify-center relative">
-            <div class="max-w-7xl mx-auto px-6 w-full">
-                <div class="text-center mb-16">
+            <div class="max-w-7xl mx-auto px-6 w-full h-full flex flex-col items-center justify-center">
+                <div class="text-center mb-16 opacity-0" id="book-text">
                     <h2 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
                         Descubre Nuestro Sistema
                     </h2>
-                    <p class="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                        Explora las funcionalidades de GesPro a través de esta experiencia interactiva
-                    </p>
                 </div>
 
-                <!-- Contenedor del libro -->
-                <div id="book-container" class="relative w-full max-w-6xl h-[600px] perspective-1000 mx-auto">
-                    <!-- Cubierta del libro -->
-                    <div id="book-cover"
-                        class="absolute w-1/2 h-full bg-gradient-to-r from-blue-800 to-indigo-900 dark:from-gray-800 dark:to-gray-900 rounded-l-xl shadow-2xl border-r-8 border-amber-600 z-20 origin-right preserve-3d">
-                        <!-- Diseño de portada -->
-                        <div class="absolute inset-0 p-8">
-                            <div
-                                class="h-full border-4 border-amber-500/30 rounded-lg p-6 flex flex-col justify-between">
-                                <div>
-                                    <h2 class="text-3xl font-bold text-white mb-4">GesPro System</h2>
-                                    <div class="w-20 h-1 bg-amber-400 mb-6"></div>
-                                    <p class="text-blue-200 text-lg">Edición 2025</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-white text-2xl font-semibold">v0.9.0</p>
-                                    <p class="text-blue-200">Sistema Integral</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Lomo del libro -->
-                        <div
-                            class="absolute -right-8 top-4 w-8 h-[calc(100%-2rem)] bg-gradient-to-b from-amber-800 to-amber-900 rounded-r-lg">
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div
-                                    class="transform -rotate-90 text-white font-bold tracking-widest whitespace-nowrap">
-                                    GESTIÓN ACADÉMICA
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Páginas del libro -->
-                    <div id="book-pages"
-                        class="absolute left-1/2 w-1/2 h-full bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700 rounded-r-xl shadow-2xl z-10 preserve-3d overflow-hidden paper-texture book-thickness">
-
-                        <!-- Contenedor relativo para los slides -->
-                        <div class="relative w-full h-full">
-
-                            <!-- Slide 1: Administrador -->
-                            <div
-                                class="book-slide absolute inset-0 p-8 flex flex-col justify-center opacity-100 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
-                                <div class="flex items-center mb-6">
-                                    <div
-                                        class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-lg">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Módulo Administrador
-                                    </h3>
-                                </div>
-                                <ul class="space-y-4 text-gray-700 dark:text-gray-300">
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-green-500 mr-2 mt-1 shrink-0" fill="currentColor"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Gestión total de usuarios y roles.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-green-500 mr-2 mt-1 shrink-0" fill="currentColor"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Control de eventos y categorías.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-green-500 mr-2 mt-1 shrink-0" fill="currentColor"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Supervisión de evaluaciones.</span>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <!-- Slide 2: Juez -->
-                            <div
-                                class="book-slide absolute inset-0 p-8 flex flex-col justify-center opacity-0 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
-                                <div class="flex items-center mb-6">
-                                    <div
-                                        class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-lg">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Módulo Juez</h3>
-                                </div>
-                                <ul class="space-y-4 text-gray-700 dark:text-gray-300">
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-green-500 mr-2 mt-1 shrink-0" fill="currentColor"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Evaluación de proyectos asignados.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-green-500 mr-2 mt-1 shrink-0" fill="currentColor"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Rúbricas dinámicas y claras.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-green-500 mr-2 mt-1 shrink-0" fill="currentColor"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Feedback en tiempo real.</span>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <!-- Slide 3: Participante -->
-                            <div
-                                class="book-slide absolute inset-0 p-8 flex flex-col justify-center opacity-0 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
-                                <div class="flex items-center mb-6">
-                                    <div
-                                        class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-lg">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Módulo Participante
-                                    </h3>
-                                </div>
-                                <ul class="space-y-4 text-gray-700 dark:text-gray-300">
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-green-500 mr-2 mt-1 shrink-0" fill="currentColor"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Registro de equipos y proyectos.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-green-500 mr-2 mt-1 shrink-0" fill="currentColor"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Seguimiento de evaluaciones.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg class="w-5 h-5 text-green-500 mr-2 mt-1 shrink-0" fill="currentColor"
-                                            viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Acceso a resultados.</span>
-                                    </li>
-                                </ul>
-                            </div>
-
-                        </div>
-
-                        <!-- Separador de páginas -->
-                        <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-amber-200 to-amber-400 z-20">
-                        </div>
-                    </div>
-                </div>
+                {{-- El libro se moverá aquí visualmente --}}
+                <div class="h-[600px] w-full"></div>
 
                 <!-- Controles del libro -->
-                <div class="text-center mt-12">
+                <div class="text-center mt-12 opacity-0" id="book-controls">
                     <p class="text-gray-600 dark:text-gray-400 mb-4">
-                        Desplázate para abrir el libro
+                        Desplázate para pasar página
                     </p>
                     <div
                         class="w-24 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent mx-auto rounded-full">
@@ -481,64 +389,7 @@
             </div>
         </section>
 
-        {{-- FEATURES GRID --}}
-        <section class="py-20">
-            <div class="max-w-7xl mx-auto px-6 pb-20 w-full">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-                    <div
-                        class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl hover:border-indigo-500/30 dark:hover:border-indigo-500/30 hover:-translate-y-2 transition-all duration-300">
-                        <div
-                            class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Equipos Dinámicos</h3>
-                        <p class="text-gray-500 dark:text-gray-400 leading-relaxed">
-                            Fomenta la colaboración. Crea equipos multidisciplinarios combinando talento de diversas
-                            carreras.
-                        </p>
-                    </div>
-
-                    <div
-                        class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl hover:border-purple-500/30 dark:hover:border-purple-500/30 hover:-translate-y-2 transition-all duration-300">
-                        <div
-                            class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Evaluación en Tiempo Real</h3>
-                        <p class="text-gray-500 dark:text-gray-400 leading-relaxed">
-                            Sistema de rúbricas digital. Los jueces evalúan y los resultados se calculan
-                            instantáneamente.
-                        </p>
-                    </div>
-
-                    <div
-                        class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-8 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl hover:border-pink-500/30 dark:hover:border-pink-500/30 hover:-translate-y-2 transition-all duration-300">
-                        <div
-                            class="w-14 h-14 bg-pink-100 dark:bg-pink-900/30 rounded-2xl flex items-center justify-center text-pink-600 dark:text-pink-400 mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Resultados Automáticos</h3>
-                        <p class="text-gray-500 dark:text-gray-400 leading-relaxed">
-                            Generación automática de rankings, podios y constancias de participación listas para
-                            descargar.
-                        </p>
-                    </div>
-
-                </div>
-            </div>
-        </section>
 
         <footer
             class="py-8 text-center w-full text-sm text-gray-400 dark:text-gray-600 border-t border-gray-100 dark:border-gray-800">
