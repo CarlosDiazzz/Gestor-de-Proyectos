@@ -157,7 +157,8 @@
 
                         {{-- WIDGET: SOLICITUDES PENDIENTES (Solo para Líderes) --}}
                         @php
-                            $es_lider_actual = $equipo && $equipo->getLider() && $equipo->getLider()->id === Auth::user()->participante->id;
+                            $participante_actual = Auth::user()->participante;
+                            $es_lider_actual = $equipo && $equipo->getLider() && $participante_actual && $equipo->getLider()->id === $participante_actual->id;
                         @endphp
 
                         @if ($es_lider_actual && $solicitudes_pendientes->count() > 0)
