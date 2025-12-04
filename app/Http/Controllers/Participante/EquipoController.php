@@ -7,6 +7,7 @@ use App\Models\Equipo;
 use App\Models\Evento;
 use App\Models\Perfil;
 use App\Models\User;
+use App\Models\SolicitudEquipo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -138,8 +139,18 @@ class EquipoController extends Controller
             return back()->with('error', 'Equipo lleno.');
         }
 
+        // Validación 3: Que no tenga solicitud pendiente para este equipo
+        $solicitudPendiente = SolicitudEquipo::where('equipo_id', $equipo->id)
+            ->where('participante_id', $participante->id)
+            ->where('estado', 'pendiente')
+            ->exists();
+
+        if ($solicitudPendiente) {
+            return back()->with('error', 'Ya tienes una solicitud pendiente para este equipo.');
+        }
+
         // Redirigir al método de crear solicitud
-        return redirect()->route('participante.solicitudes.crear', $equipo)
+        return redirect()->route('participante.solicitudes.crear.form', $equipo)
             ->with('mensaje', $request->mensaje);
     }
 

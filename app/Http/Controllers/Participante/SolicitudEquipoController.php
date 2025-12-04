@@ -29,20 +29,20 @@ class SolicitudEquipoController extends Controller
 
         // Validar que no esté en el equipo
         if ($participante->equipos->contains($equipo->id)) {
-            return back()->with('error', 'Ya estás en este equipo.');
+            return redirect()->route('participante.dashboard')->with('error', 'Ya estás en este equipo.');
         }
 
         // Validar que no esté en otro equipo
         if ($participante->equipos->isNotEmpty()) {
-            return back()->with('error', 'Ya estás en otro equipo. Debes salirte primero.');
+            return redirect()->route('participante.dashboard')->with('error', 'Ya estás en otro equipo. Debes salirte primero.');
         }
 
-        // Validar que no haya solicitud pendiente
+        // Validar que no haya solicitud pendiente PARA ESTE EQUIPO
         if (SolicitudEquipo::where('equipo_id', $equipo->id)
             ->where('participante_id', $participante->id)
             ->where('estado', 'pendiente')
             ->exists()) {
-            return back()->with('error', 'Ya tienes una solicitud pendiente para este equipo.');
+            return redirect()->route('participante.dashboard')->with('error', 'Ya tienes una solicitud pendiente para este equipo.');
         }
 
         // Crear solicitud
@@ -56,7 +56,7 @@ class SolicitudEquipoController extends Controller
         // Disparar evento
         event(new SolicitudEquipoEnviada($solicitud));
 
-        return back()->with('success', 'Solicitud enviada al líder del equipo.');
+        return redirect()->route('participante.dashboard')->with('success', 'Solicitud enviada al líder del equipo.');
     }
 
     public function misSolicitudes(Request $request)
@@ -115,6 +115,16 @@ class SolicitudEquipoController extends Controller
             $solicitud->participante_id,
             ['perfil_id' => 1]
         );
+
+        // AUTOMÁTICAMENTE: Rechazar todas las otras solicitudes pendientes de este participante
+        SolicitudEquipo::where('participante_id', $solicitud->participante_id)
+            ->where('estado', 'pendiente')
+            ->where('id', '!=', $solicitud->id)
+            ->update([
+                'estado' => 'rechazada',
+                'respondida_por_participante_id' => $lider->id,
+                'respondida_en' => now()
+            ]);
 
         // Disparar evento
         event(new SolicitudEquipoAceptada($solicitud));
