@@ -191,20 +191,23 @@ Route::middleware(['auth', 'role:Participante'])->prefix('participante')->name('
 });
 
 Route::get('/test-connection', function () {
-    $host = config('mail.mailers.smtp.host');
-    $port = config('mail.mailers.smtp.port');
+    // Usamos las variables directas para probar sin caché
+    $host = 'ssl://smtp-relay.brevo.com'; // Nota el prefijo ssl://
+    $port = 465;
     
-    echo "Intentando conectar a $host en el puerto $port...<br>";
+    echo "<h1>Prueba de Conexión SMTP (Puerto 465)</h1>";
+    echo "Intentando conectar a <b>$host</b> en puerto <b>$port</b>...<br><br>";
     
     $timeout = 10;
+    // fsockopen es la prueba de fuego de la red
     $socket = fsockopen($host, $port, $errno, $errstr, $timeout);
     
     if (!$socket) {
-        return "ERROR: No se pudo conectar. Código: $errno - Mensaje: $errstr";
+        return "<h2 style='color:red'>FALLÓ: $errno - $errstr</h2><p>Railway sigue bloqueando la conexión.</p>";
     }
     
     fclose($socket);
-    return "ÉXITO: Conexión TCP establecida correctamente con el servidor de correo.";
+    return "<h2 style='color:green'>¡ÉXITO!</h2><p>Hay conexión TCP con Brevo. Si el correo no llega, es problema de usuario/contraseña, pero la red ya funciona.</p>";
 });
 
 require __DIR__ . '/auth.php';
