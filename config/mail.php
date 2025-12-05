@@ -58,6 +58,11 @@ return [
                 ],
             ],
         ],
+        
+        'brevo' => [
+            'transport' => 'brevo',
+            'key' => env('BREVO_KEY'),
+        ],
 
         'ses' => [
             'transport' => 'ses',
