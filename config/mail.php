@@ -49,7 +49,6 @@ return [
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
             
-            // Opciones de flujo para ser permisivos con el certificado SSL de Brevo
             'stream' => [
                 'ssl' => [
                    'allow_self_signed' => true,
@@ -58,7 +57,7 @@ return [
                 ],
             ],
         ],
-        
+
         'brevo' => [
             'transport' => 'brevo',
             'key' => env('BREVO_KEY'),
