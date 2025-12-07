@@ -11,6 +11,7 @@ class SolicitudEquipo extends Model
     protected $fillable = [
         'equipo_id',
         'participante_id',
+        'perfil_solicitado_id',
         'mensaje',
         'estado',
         'respondida_por_participante_id',
