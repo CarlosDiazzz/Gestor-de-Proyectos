@@ -56,13 +56,13 @@ class EquipoController extends Controller
             return back()->withErrors(['rol_limites' => 'El total de vacantes no puede exceder 4 miembros.'])->withInput();
         }
 
-        // NUEVA Validación: Diversidad de roles (al menos 2 tipos diferentes)
+        // NUEVA Validación: Diversidad de roles (al menos 3 tipos diferentes)
         $rolesConVacantes = count(array_filter($request->rol_limites, function($rol) {
             return $rol['max_vacantes'] > 0;
         }));
         
-        if ($totalVacantes > 0 && $rolesConVacantes < 2) {
-            return back()->withErrors(['rol_limites' => 'Debes tener al menos 2 tipos de roles diferentes en tu equipo para fomentar la diversidad.'])->withInput();
+        if ($totalVacantes > 0 && $rolesConVacantes < 3) {
+            return back()->withErrors(['rol_limites' => 'Debes tener al menos 3 tipos de roles diferentes en tu equipo para fomentar la diversidad.'])->withInput();
         }
 
         try {

@@ -166,10 +166,10 @@
             hayError = true;
             mensajeError = '⚠️ El total no puede exceder 4 vacantes';
         }
-        // Validar diversidad de roles
-        else if (total > 0 && rolesConVacantes < 2) {
+        // Validar diversidad de roles (al menos 3 tipos diferentes)
+        else if (total > 0 && rolesConVacantes < 3) {
             hayError = true;
-            mensajeError = '⚠️ Debes seleccionar al menos 2 tipos de roles diferentes';
+            mensajeError = '⚠️ Debes seleccionar al menos 3 tipos de roles diferentes';
         }
         
         if (hayError) {
