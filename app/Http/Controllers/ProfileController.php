@@ -43,13 +43,13 @@ class ProfileController extends Controller
                 'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/'],
                 'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$user->id],
                 'telefono' => ['nullable', 'digits:10'],
-                'no_control' => ['required', 'size:8', 'regex:/^[a-zA-Z0-9]{8}$/', 'unique:participantes,no_control,'.($user->participante->id ?? 'NULL')],
+                'no_control' => ['required', 'size:10', 'regex:/^(?=.*[0-9])[a-zA-Z0-9]{10}$/', 'unique:participantes,no_control,'.($user->participante->id ?? 'NULL')],
                 'carrera_id' => ['required', 'exists:carreras,id'],
             ], [
                 'name.regex' => 'El nombre solo puede contener letras y espacios.',
                 'telefono.digits' => 'El teléfono debe tener exactamente 10 dígitos.',
-                'no_control.size' => 'La matrícula debe tener exactamente 8 caracteres.',
-                'no_control.regex' => 'La matrícula solo puede contener letras y números.',
+                'no_control.size' => 'La matrícula debe tener exactamente 10 caracteres.',
+                'no_control.regex' => 'La matrícula debe contener al menos un número y solo letras y números.',
             ]);
         } else {
             $validated = $request->validate([
