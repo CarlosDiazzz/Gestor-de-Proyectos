@@ -7,53 +7,82 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+# Gestor de Proyectos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Sistema integral para la gestión de proyectos, eventos, y participación estudiantil, diseñado para facilitar la organización de hackathons, concursos, y la administración de proyectos académicos o de innovación.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Características Principales
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+*   **Gestión de Usuarios con Roles**: Administradores, Jueces, y Participantes con permisos diferenciados.
+*   **Administración de Eventos**: Creación, configuración y seguimiento de hackathons o concursos.
+*   **Gestión de Equipos**: Formación de equipos por parte de los participantes y manejo de solicitudes de unión/rechazo.
+*   **Registro de Participantes**: Perfiles detallados para estudiantes, incluyendo carrera y número de control.
+*   **Envío y Seguimiento de Proyectos**: Los equipos pueden registrar y subir avances de sus proyectos.
+*   **Evaluación de Proyectos**: Jueces asignados pueden calificar y dejar comentarios en los proyectos.
+*   **Interacciones con Solicitudes**: Sistema de notificación y respuesta para solicitudes de equipos.
+*   **Vistas Personalizadas**: Paneles de control adaptados para cada tipo de usuario (Administrador, Juez, Participante).
 
-## Learning Laravel
+## Tecnologías Utilizadas
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+*   **Backend**: Laravel (PHP)
+*   **Frontend**: Blade (con Alpine.js para interactividad), Tailwind CSS
+*   **Base de Datos**: MySQL (o compatible con Eloquent ORM)
+*   **Otras**: Composer, NPM/Yarn, Vite
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Requisitos
 
-## Laravel Sponsors
+*   PHP >= 8.2
+*   Composer
+*   Node.js y NPM (o Yarn)
+*   Servidor web (Nginx o Apache)
+*   Base de datos (MySQL, PostgreSQL, SQLite, etc.)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Instalación
 
-### Premium Partners
+Sigue estos pasos para poner el proyecto en marcha en tu máquina local:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1.  **Clona el repositorio:**
+    ```bash
+    git clone [URL_DEL_REPOSITORIO] gestor-proyectos
+    cd gestor-proyectos
+    ```
+2.  **Instala las dependencias de Composer:**
+    ```bash
+    composer install
+    ```
+3.  **Instala las dependencias de NPM y compila los assets:**
+    ```bash
+    npm install
+    npm run dev # O npm run build para producción
+    ```
+4.  **Crea el archivo `.env`:**
+    Copia el archivo `.env.example` y renómbralo a `.env`.
+    ```bash
+    cp .env.example .env
+    ```
+5.  **Genera la clave de la aplicación:**
+    ```bash
+    php artisan key:generate
+    ```
+6.  **Configura tu base de datos:**
+    Abre el archivo `.env` y configura tus credenciales de base de datos (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
 
-## Contributing
+7.  **Ejecuta las migraciones y siembra la base de datos (opcional):**
+    ```bash
+    php artisan migrate --seed
+    ```
+    El comando `--seed` llenará la base de datos con datos de prueba, incluyendo roles y usuarios iniciales.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+8.  **Inicia el servidor de desarrollo (opcional):**
+    ```bash
+    php artisan serve
+    ```
+    La aplicación estará disponible en `http://127.0.0.1:8000`.
 
-## Code of Conduct
+## Contribución
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Si deseas contribuir a este proyecto, por favor, sigue las directrices de código y los estándares establecidos.
 
-## Security Vulnerabilities
+## Licencia
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Este proyecto está bajo la licencia MIT.
