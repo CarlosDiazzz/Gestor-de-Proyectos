@@ -80,8 +80,14 @@
                                 <tr class="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
                                     <td class="py-5 px-4 pl-9 xl:pl-11">
                                         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                            <div class="h-10 w-10 rounded-full bg-indigo-50 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-lg overflow-hidden shrink-0">
-                                                {{ strtoupper(substr($usuario->nombre ?: $usuario->email, 0, 1)) }}
+                                            <div class="h-10 w-10 rounded-full bg-indigo-50 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-lg overflow-hidden shrink-0 border border-indigo-100 dark:border-indigo-800">
+                                                @if($usuario->avatar)
+                                                    <img src="{{ asset('storage/' . $usuario->avatar) }}" 
+                                                         alt="{{ $usuario->nombre }}" 
+                                                         class="h-full w-full object-cover">
+                                                @else
+                                                    {{ strtoupper(substr($usuario->nombre ?: $usuario->email, 0, 1)) }}
+                                                @endif
                                             </div>
                                             <div>
                                                 <h5 class="font-medium text-black dark:text-white">{{ $usuario->nombre }}</h5>
