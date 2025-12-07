@@ -21,13 +21,28 @@
             <div class="px-6 pb-6 lg:pb-8 xl:pb-10">
                 <div class="relative z-30 mx-auto -mt-16 h-32 w-32 rounded-full bg-white/20 p-1 backdrop-blur sm:h-40 sm:w-40 sm:p-2">
                     <div class="relative flex h-full w-full items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg">
-                        {{-- Avatar con Iniciales --}}
-                        <span class="text-4xl font-bold text-gray-500 dark:text-gray-300">
-                            {{ substr($user->name, 0, 1) }}
-                        </span>
+                        @if($user->avatar)
+                            <img src="{{ asset('storage/' . $user->avatar) }}" 
+                                 alt="{{ $user->name }}" 
+                                 class="h-full w-full object-cover">
+                        @else
+                            <span class="text-4xl font-bold text-gray-500 dark:text-gray-300">
+                                {{ substr($user->name, 0, 1) }}
+                            </span>
+                        @endif
                     </div>
+                    
+                    <!-- Ícono de Edición (más grande) -->
+                    <button onclick="document.getElementById('profileAvatarInput').click()" 
+                            class="absolute bottom-2 right-2 h-10 w-10 rounded-full bg-indigo-600 dark:bg-indigo-500 border-4 border-white dark:border-gray-800 flex items-center justify-center hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all shadow-lg cursor-pointer group hover:scale-110"
+                            title="Cambiar foto de perfil">
+                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                    </button>
                 </div>
                 
+
                 <div class="mt-4 text-center">
                     <h3 class="mb-1.5 text-2xl font-semibold text-black dark:text-white">
                         {{ $user->name }}
@@ -61,6 +76,17 @@
                 </div>
             </div>
         </div>
+
+        <!-- Formulario oculto para subir avatar -->
+        <form id="profileAvatarForm" action="{{ route('profile.avatar.update') }}" method="POST" enctype="multipart/form-data" class="hidden">
+            @csrf
+            <input type="file" 
+                   id="profileAvatarInput" 
+                   name="avatar" 
+                   accept="image/*" 
+                   onchange="document.getElementById('profileAvatarForm').submit()"
+                   class="hidden">
+        </form>
 
         {{-- GRID DE FORMULARIOS --}}
         <div class="grid grid-cols-1 gap-8">
