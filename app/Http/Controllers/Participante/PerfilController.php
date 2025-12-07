@@ -30,9 +30,13 @@ class PerfilController extends Controller
         $participanteId = $user->participante ? $user->participante->id : null;
 
         $request->validate([
-            'no_control' => ['required', 'string', \Illuminate\Validation\Rule::unique('participantes')->ignore($participanteId)],
+            'no_control' => ['required', 'size:8', 'regex:/^[a-zA-Z0-9]{8}$/', \Illuminate\Validation\Rule::unique('participantes')->ignore($participanteId)],
             'carrera_id' => 'required|exists:carreras,id',
-            'telefono'   => 'required|string|max:15',
+            'telefono'   => 'required|digits:10',
+        ], [
+            'no_control.size' => 'La matrícula debe tener exactamente 8 caracteres.',
+            'no_control.regex' => 'La matrícula solo puede contener letras y números.',
+            'telefono.digits' => 'El teléfono debe tener exactamente 10 dígitos.',
         ]);
 
         // updateOrCreate busca por 'user_id' y actualiza o crea según sea necesario

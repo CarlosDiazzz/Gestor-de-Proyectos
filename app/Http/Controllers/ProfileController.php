@@ -40,16 +40,23 @@ class ProfileController extends Controller
         if ($esParticipante) {
             // Usamos validación manual o inyectamos el request correspondiente
             $validated = $request->validate([
-                'name' => ['required', 'string', 'max:255'],
+                'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/'],
                 'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$user->id],
-                'telefono' => ['nullable', 'string', 'max:20'],
-                'no_control' => ['required', 'string', 'max:20', 'unique:participantes,no_control,'.($user->participante->id ?? 'NULL')],
+                'telefono' => ['nullable', 'digits:10'],
+                'no_control' => ['required', 'size:8', 'regex:/^[a-zA-Z0-9]{8}$/', 'unique:participantes,no_control,'.($user->participante->id ?? 'NULL')],
                 'carrera_id' => ['required', 'exists:carreras,id'],
+            ], [
+                'name.regex' => 'El nombre solo puede contener letras y espacios.',
+                'telefono.digits' => 'El teléfono debe tener exactamente 10 dígitos.',
+                'no_control.size' => 'La matrícula debe tener exactamente 8 caracteres.',
+                'no_control.regex' => 'La matrícula solo puede contener letras y números.',
             ]);
         } else {
             $validated = $request->validate([
-                'name' => ['required', 'string', 'max:255'],
+                'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/'],
                 'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            ], [
+                'name.regex' => 'El nombre solo puede contener letras y espacios.',
             ]);
         }
 
