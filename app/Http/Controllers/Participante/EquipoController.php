@@ -39,7 +39,27 @@ class EquipoController extends Controller
             'nombre_proyecto' => 'required|string|max:100',
             'descripcion_proyecto' => 'required|string|max:500',
             'repositorio_url' => 'nullable|url|max:255',
+            // NUEVAS VALIDACIONES DE ROLES
+            'max_programadores' => 'required|integer|min:0|max:4',
+            'max_disenadores' => 'required|integer|min:0|max:4',
+            'max_testers' => 'required|integer|min:0|max:4',
         ]);
+
+        // Validación personalizada: Total ≤ 4
+        $totalVacantes = $request->max_programadores + $request->max_disenadores + $request->max_testers;
+        if ($totalVacantes > 4) {
+            return back()->withErrors(['max_programadores' => 'El total de vacantes no puede exceder 4 miembros.'])->withInput();
+        }
+
+        // NUEVA Validación: Diversidad de roles (al menos 2 tipos diferentes)
+        $rolesConVacantes = 0;
+        if ($request->max_programadores > 0) $rolesConVacantes++;
+        if ($request->max_disenadores > 0) $rolesConVacantes++;
+        if ($request->max_testers > 0) $rolesConVacantes++;
+        
+        if ($totalVacantes > 0 && $rolesConVacantes < 2) {
+            return back()->withErrors(['max_programadores' => 'Debes tener al menos 2 tipos de roles diferentes en tu equipo para fomentar la diversidad.'])->withInput();
+        }
 
         try {
             DB::transaction(function () use ($request) {
@@ -51,9 +71,12 @@ class EquipoController extends Controller
                     throw new \Exception("No tienes un perfil de participante registrado.");
                 }
 
-                // 1. Crear Equipo
+                // 1. Crear Equipo CON LÍMITES
                 $equipo = Equipo::create([
                     'nombre' => $request->nombre_equipo,
+                    'max_programadores' => $request->max_programadores,
+                    'max_disenadores' => $request->max_disenadores,
+                    'max_testers' => $request->max_testers,
                 ]);
 
                 // 2. Crear Proyecto

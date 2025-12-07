@@ -12,7 +12,12 @@ class Equipo extends Model
 
     protected $table = 'equipos';
 
-    protected $fillable = ['nombre'];
+    protected $fillable = [
+        'nombre',
+        'max_programadores',
+        'max_disenadores',
+        'max_testers',
+    ];
 
     public function proyecto()
     {
@@ -40,6 +45,7 @@ class Equipo extends Model
             ->wherePivot('perfil_id', 3)
             ->first();
     }
+    
     public function removerIntegrante($participanteId)
     {
         $idPerfilLider = 3;
@@ -65,5 +71,81 @@ class Equipo extends Model
                 $this->participantes()->updateExistingPivot($nuevoLider->id, ['perfil_id' => $idPerfilLider]);
             }
         }
+    }
+
+    /**
+     * Obtiene el conteo actual de cada rol en el equipo
+     */
+    public function getConteoRoles()
+    {
+        return [
+            'programadores' => $this->participantes()->wherePivot('perfil_id', 1)->count(),
+            'disenadores' => $this->participantes()->wherePivot('perfil_id', 2)->count(),
+            'testers' => $this->participantes()->wherePivot('perfil_id', 4)->count(),
+            'lider' => $this->participantes()->wherePivot('perfil_id', 3)->count(),
+        ];
+    }
+
+    /**
+     * Verifica si un rol tiene vacantes disponibles
+     */
+    public function tieneVacantesParaRol($perfilId)
+    {
+        $conteo = $this->getConteoRoles();
+        
+        switch ($perfilId) {
+            case 1: // Programador
+                return $conteo['programadores'] < $this->max_programadores;
+            case 2: // Diseñador
+                return $conteo['disenadores'] < $this->max_disenadores;
+            case 4: // Tester
+                return $conteo['testers'] < $this->max_testers;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Obtiene roles disponibles (con vacantes)
+     */
+    public function getRolesDisponibles()
+    {
+        $roles = [];
+        $conteo = $this->getConteoRoles();
+        
+        if ($conteo['programadores'] < $this->max_programadores) {
+            $roles[] = [
+                'id' => 1,
+                'nombre' => 'Programador',
+                'disponibles' => $this->max_programadores - $conteo['programadores'],
+                'total' => $this->max_programadores
+            ];
+        }
+        if ($conteo['disenadores'] < $this->max_disenadores) {
+            $roles[] = [
+                'id' => 2,
+                'nombre' => 'Diseñador',
+                'disponibles' => $this->max_disenadores - $conteo['disenadores'],
+                'total' => $this->max_disenadores
+            ];
+        }
+        if ($conteo['testers'] < $this->max_testers) {
+            $roles[] = [
+                'id' => 4,
+                'nombre' => 'Tester',
+                'disponibles' => $this->max_testers - $conteo['testers'],
+                'total' => $this->max_testers
+            ];
+        }
+        
+        return $roles;
+    }
+
+    /**
+     * Verifica si el equipo está completo
+     */
+    public function estaCompleto()
+    {
+        return $this->participantes()->count() >= 5;
     }
 }

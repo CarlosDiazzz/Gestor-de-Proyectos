@@ -35,11 +35,28 @@
                         <span class="block text-xs text-gray-500 dark:text-gray-400">{{ Auth::user()->email }}</span>
                     </span>
 
-                    <span class="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 overflow-hidden flex items-center justify-center">
-                        <svg class="h-6 w-6 text-gray-400 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </span>
+                    <div class="relative">
+                        <span class="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 overflow-hidden flex items-center justify-center">
+                            @if(Auth::user()->avatar)
+                                <img src="{{ asset('storage/' . Auth::user()->avatar) }}" 
+                                     alt="{{ Auth::user()->name }}" 
+                                     class="h-full w-full object-cover">
+                            @else
+                                <svg class="h-6 w-6 text-gray-400 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            @endif
+                        </span>
+                        
+                        <!-- Ícono de Edición -->
+                        <button onclick="document.getElementById('avatarInput').click()" 
+                                class="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-indigo-600 dark:bg-indigo-500 border-2 border-white dark:border-gray-900 flex items-center justify-center hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors cursor-pointer group"
+                                title="Cambiar foto de perfil">
+                            <svg class="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                        </button>
+                    </div>
 
                     <svg :class="dropdownOpen && 'rotate-180'" class="hidden fill-current sm:block w-4 h-4 text-gray-500 transition-transform duration-200" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -81,6 +98,17 @@
             </div>
         </div>
     </div>
+
+    <!-- Formulario oculto para subir avatar -->
+    <form id="avatarForm" action="{{ route('profile.avatar.update') }}" method="POST" enctype="multipart/form-data" class="hidden">
+        @csrf
+        <input type="file" 
+               id="avatarInput" 
+               name="avatar" 
+               accept="image/*" 
+               onchange="document.getElementById('avatarForm').submit()"
+               class="hidden">
+    </form>
 
     <script>
         // Lógica del Toggle Dark Mode

@@ -74,6 +74,58 @@
                             </div>
                         </div>
 
+                        {{-- Selección de Rol --}}
+                        <div>
+                            <x-input-label for="perfil_solicitado_id" value="Rol que deseas ocupar" class="mb-2 font-bold" />
+                            <p class="text-xs text-gray-600 dark:text-gray-400 mb-3">Selecciona el rol en el que quieres participar en el equipo</p>
+                            
+                            @php
+                                $rolesDisponibles = $equipo->getRolesDisponibles();
+                            @endphp
+
+                            @if(count($rolesDisponibles) > 0)
+                                <div class="space-y-2">
+                                    @foreach($rolesDisponibles as $rol)
+                                        <label class="flex items-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-xl cursor-pointer hover:border-indigo-500 dark:hover:border-indigo-500 transition-all group {{ old('perfil_solicitado_id') == $rol['id'] ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'bg-white dark:bg-gray-700/30' }}">
+                                            <input type="radio" name="perfil_solicitado_id" value="{{ $rol['id'] }}" 
+                                                   class="w-5 h-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 dark:border-gray-600"
+                                                   {{ old('perfil_solicitado_id') == $rol['id'] ? 'checked' : '' }}
+                                                   required>
+                                            <div class="ml-4 flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-bold text-gray-900 dark:text-white">
+                                                        @if($rol['id'] == 1)
+                                                            👨‍💻 {{ $rol['nombre'] }}
+                                                        @elseif($rol['id'] == 2)
+                                                            🎨 {{ $rol['nombre'] }}
+                                                        @elseif($rol['id'] == 4)
+                                                            🧪 {{ $rol['nombre'] }}
+                                                        @else
+                                                            {{ $rol['nombre'] }}
+                                                        @endif
+                                                    </span>
+                                                    <span class="text-xs font-semibold px-3 py-1 rounded-full {{ $rol['disponibles'] == 1 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' }}">
+                                                        {{ $rol['disponibles'] }} {{ $rol['disponibles'] == 1 ? 'vacante' : 'vacantes' }}
+                                                    </span>
+                                                </div>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    {{ $rol['disponibles'] }}/{{ $rol['total'] }} disponibles
+                                                </p>
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                                    <p class="text-sm text-red-700 dark:text-red-400">
+                                        ⚠️ Este equipo no tiene vacantes disponibles en este momento.
+                                    </p>
+                                </div>
+                            @endif
+                            
+                            <x-input-error :messages="$errors->get('perfil_solicitado_id')" class="mt-2" />
+                        </div>
+
                         {{-- Mensaje de Solicitud --}}
                         <div>
                             <x-input-label for="mensaje" value="Mensaje (Opcional)" class="mb-2 font-bold" />

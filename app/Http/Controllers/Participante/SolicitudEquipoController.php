@@ -22,6 +22,7 @@ class SolicitudEquipoController extends Controller
     public function crearSolicitud(Request $request, Equipo $equipo)
     {
         $request->validate([
+            'perfil_solicitado_id' => 'required|exists:perfiles,id',
             'mensaje' => 'nullable|string|max:500',
         ]);
 
@@ -47,11 +48,22 @@ class SolicitudEquipoController extends Controller
             return redirect()->route('participante.dashboard')->with('error', 'Ya tienes una solicitud pendiente para este equipo. Espera a que el líder responda.');
         }
 
+        // NUEVA Validación: Verificar que el equipo no esté lleno
+        if ($equipo->estaCompleto()) {
+            return redirect()->route('participante.dashboard')->with('error', 'El equipo ya está completo.');
+        }
+
+        // NUEVA Validación: Verificar que el rol solicitado tenga vacantes
+        if (!$equipo->tieneVacantesParaRol($request->perfil_solicitado_id)) {
+            return redirect()->route('participante.dashboard')->with('error', 'El rol seleccionado ya no tiene vacantes disponibles.');
+        }
+
         try {
             // Crear solicitud
             $solicitud = SolicitudEquipo::create([
                 'equipo_id' => $equipo->id,
                 'participante_id' => $participante->id,
+                'perfil_solicitado_id' => $request->perfil_solicitado_id,
                 'mensaje' => $request->mensaje,
                 'estado' => 'pendiente'
             ]);
@@ -113,6 +125,16 @@ class SolicitudEquipoController extends Controller
             return back()->with('error', 'Esta solicitud ya ha sido respondida.');
         }
 
+        // NUEVA Validación: Verificar que el equipo no esté lleno
+        if ($solicitud->equipo->estaCompleto()) {
+            return back()->with('error', 'El equipo ya está completo.');
+        }
+
+        // NUEVA Validación: Verificar que el rol solicitado aún tenga vacantes
+        if ($solicitud->perfil_solicitado_id && !$solicitud->equipo->tieneVacantesParaRol($solicitud->perfil_solicitado_id)) {
+            return back()->with('error', 'El rol solicitado ya no tiene vacantes disponibles.');
+        }
+
         // Aceptar solicitud
         $solicitud->update([
             'estado' => 'aceptada',
@@ -120,10 +142,11 @@ class SolicitudEquipoController extends Controller
             'respondida_en' => now()
         ]);
 
-        // Agregar al equipo con perfil de Programador
+        // Agregar al equipo con el ROL SOLICITADO (o Programador por defecto si es solicitud antigua)
+        $perfilId = $solicitud->perfil_solicitado_id ?? 1; // Default: Programador
         $solicitud->equipo->participantes()->attach(
             $solicitud->participante_id,
-            ['perfil_id' => 1]
+            ['perfil_id' => $perfilId]
         );
 
         // AUTOMÁTICAMENTE: Rechazar todas las otras solicitudes pendientes de este participante
