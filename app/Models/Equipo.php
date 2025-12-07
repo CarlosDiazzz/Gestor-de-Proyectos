@@ -39,6 +39,11 @@ class Equipo extends Model
         return $this->solicitudes()->where('estado', 'pendiente');
     }
 
+    public function rolLimites()
+    {
+        return $this->hasMany(EquipoRolLimite::class);
+    }
+
     public function getLider()
     {
         return $this->participantes()
@@ -106,40 +111,65 @@ class Equipo extends Model
     }
 
     /**
-     * Obtiene roles disponibles (con vacantes)
+     * Obtiene los roles que aún tienen vacantes disponibles
      */
     public function getRolesDisponibles()
     {
         $roles = [];
         $conteo = $this->getConteoRoles();
         
-        if ($conteo['programadores'] < $this->max_programadores) {
-            $roles[] = [
-                'id' => 1,
-                'nombre' => 'Programador',
-                'disponibles' => $this->max_programadores - $conteo['programadores'],
-                'total' => $this->max_programadores
-            ];
-        }
-        if ($conteo['disenadores'] < $this->max_disenadores) {
-            $roles[] = [
-                'id' => 2,
-                'nombre' => 'Diseñador',
-                'disponibles' => $this->max_disenadores - $conteo['disenadores'],
-                'total' => $this->max_disenadores
-            ];
-        }
-        if ($conteo['testers'] < $this->max_testers) {
-            $roles[] = [
-                'id' => 4,
-                'nombre' => 'Tester',
-                'disponibles' => $this->max_testers - $conteo['testers'],
-                'total' => $this->max_testers
-            ];
+        // Usar sistema dinámico si tiene límites en la tabla
+        $limitesDinamicos = $this->rolLimites()->with('perfil')->get();
+        
+        if ($limitesDinamicos->isNotEmpty()) {
+            // Sistema dinámico: usar tabla equipo_rol_limites
+            foreach ($limitesDinamicos as $limite) {
+                $perfilId = $limite->perfil_id;
+                $perfilNombre = $limite->perfil->nombre;
+                
+                // Contar cuántos miembros actuales tienen este perfil
+                $actual = $this->participantes()->wherePivot('perfil_id', $perfilId)->count();
+                
+                if ($actual < $limite->max_vacantes) {
+                    $roles[] = [
+                        'id' => $perfilId,
+                        'nombre' => $perfilNombre,
+                        'disponibles' => $limite->max_vacantes - $actual,
+                        'total' => $limite->max_vacantes
+                    ];
+                }
+            }
+        } else {
+            // Sistema legacy: usar columnas antiguas para retrocompatibilidad
+            if ($conteo['programadores'] < $this->max_programadores) {
+                $roles[] = [
+                    'id' => 1,
+                    'nombre' => 'Programador',
+                    'disponibles' => $this->max_programadores - $conteo['programadores'],
+                    'total' => $this->max_programadores
+                ];
+            }
+            if ($conteo['disenadores'] < $this->max_disenadores) {
+                $roles[] = [
+                    'id' => 2,
+                    'nombre' => 'Diseñador',
+                    'disponibles' => $this->max_disenadores - $conteo['disenadores'],
+                    'total' => $this->max_disenadores
+                ];
+            }
+            if ($conteo['testers'] < $this->max_testers) {
+                $roles[] = [
+                    'id' => 4,
+                    'nombre' => 'Tester',
+                    'disponibles' => $this->max_testers - $conteo['testers'],
+                    'total' => $this->max_testers
+                ];
+            }
         }
         
         return $roles;
     }
+
 
     /**
      * Verifica si el equipo está completo
