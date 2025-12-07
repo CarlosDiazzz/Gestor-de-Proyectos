@@ -38,10 +38,7 @@ class ParticipanteController extends Controller
                 $solicitudes_pendientes = $equipo->solicitudesPendientes()
                     ->with(['participante.user', 'participante.carrera'])
                     ->get();
-                    
-                // Log para debug
-                \Log::info('Dashboard: Lider ' . $lider->user->name . ' con ' . $solicitudes_pendientes->count() . ' solicitudes pendientes');
-            }
+             }
         }
 
         // Variables iniciales
@@ -193,10 +190,10 @@ class ParticipanteController extends Controller
 
         // Solo permitir si el evento ya terminó (Opcional, según tu regla de negocio)
         /*
-    if ($proyecto->evento->fecha_fin > now()) {
-        return back()->with('error', 'Las constancias estarán disponibles al finalizar el evento.');
-    }
-    */
+        if ($proyecto->evento->fecha_fin > now()) {
+            return back()->with('error', 'Las constancias estarán disponibles al finalizar el evento.');
+        }
+        */
 
         $evento = $proyecto->evento;
 

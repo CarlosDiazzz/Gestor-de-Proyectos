@@ -22,8 +22,8 @@ class EquipoController extends Controller
                 ->with('error', 'Ya perteneces a un equipo.');
         }
 
-        // Traemos eventos vigentes
-        $eventosDisponibles = Evento::where('fecha_fin', '>=', now())
+        // Traemos eventos que AÚN NO HAN COMENZADO (abiertos para registro)
+        $eventosDisponibles = Evento::where('fecha_inicio', '>', now())
             ->orderBy('fecha_inicio', 'asc')
             ->get();
 
@@ -44,6 +44,13 @@ class EquipoController extends Controller
             'max_disenadores' => 'required|integer|min:0|max:4',
             'max_testers' => 'required|integer|min:0|max:4',
         ]);
+
+        // Validación: Verificar que el evento aún no ha comenzado
+        $evento = Evento::find($request->evento_id);
+        if ($evento->fecha_inicio <= now()) {
+            return back()->with('error', 'El período de registro para este evento ya ha comenzado. No se pueden registrar nuevos equipos.')
+                ->withInput();
+        }
 
         // Validación personalizada: Total ≤ 4
         $totalVacantes = $request->max_programadores + $request->max_disenadores + $request->max_testers;
@@ -115,7 +122,7 @@ class EquipoController extends Controller
 
     public function showJoinForm(Request $request)
     {
-        $eventos = Evento::where('fecha_fin', '>=', now())->get();
+        $eventos = Evento::where('fecha_inicio', '>', now())->get();
         $perfiles = Perfil::where('nombre', '!=', 'Líder de Proyecto')->get();
 
         // Iniciamos la consulta base
@@ -123,13 +130,13 @@ class EquipoController extends Controller
             ->withCount('participantes');
 
         // --- CORRECCIÓN DE FILTRO ---
-        // Filtramos Equipos que tengan un Proyecto en X evento
+        // Filtramos Equipos que tengan un Proyecto en X evento QUE AÚNA NO HA COMENZADO
         if ($request->has('evento_id') && $request->evento_id != '') {
             $query->whereHas('proyecto', function ($q) use ($request) {
                 $q->where('evento_id', $request->evento_id);
             });
         } else {
-            // Por defecto: Equipos cuyo proyecto sea de un evento vigente
+            // Por defecto: Equipos cuyo proyecto sea de un evento que aún no ha comenzado
             $query->whereHas('proyecto', function ($q) use ($eventos) {
                 $q->whereIn('evento_id', $eventos->pluck('id'));
             });
@@ -156,6 +163,12 @@ class EquipoController extends Controller
         }
 
         $equipo = Equipo::find($request->equipo_id);
+
+        // Validación 1.5: Verificar que el evento aún no ha comenzado
+        $evento = $equipo->proyecto->evento;
+        if ($evento->fecha_inicio <= now()) {
+            return back()->with('error', 'Este evento ya ha comenzado. No se pueden aceptar nuevos equipos.');
+        }
 
         // Validación 2: Que el equipo no esté lleno
         if ($equipo->participantes()->count() >= 5) {

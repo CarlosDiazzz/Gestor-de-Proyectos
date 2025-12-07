@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Participante;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class PerfilController extends Controller
 {
@@ -30,11 +31,11 @@ class PerfilController extends Controller
         $participanteId = $user->participante ? $user->participante->id : null;
 
         $request->validate([
-            'no_control' => ['required', 'size:10', 'regex:/^(?=.*[0-9])[a-zA-Z0-9]{10}$/', \Illuminate\Validation\Rule::unique('participantes')->ignore($participanteId)],
+            'no_control' => ['required', 'size:8', 'regex:/^(?=.*[0-9])[a-zA-Z0-9]{8}$/', Rule::unique('participantes')->ignore($participanteId)],
             'carrera_id' => 'required|exists:carreras,id',
             'telefono'   => 'required|digits:10',
         ], [
-            'no_control.size' => 'La matrícula debe tener exactamente 10 caracteres.',
+            'no_control.size' => 'La matrícula debe tener exactamente 8 caracteres.',
             'no_control.regex' => 'La matrícula debe contener al menos un número y solo letras y números.',
             'telefono.digits' => 'El teléfono debe tener exactamente 10 dígitos.',
         ]);
