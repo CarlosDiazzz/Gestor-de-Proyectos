@@ -49,47 +49,31 @@
                             </p>
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {{-- Programadores --}}
-                                <div>
-                                    <label for="max_programadores" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        👨‍💻 Programadores
-                                    </label>
-                                    <select id="max_programadores" name="max_programadores" 
-                                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500"
-                                            onchange="validarTotalVacantes()">
-                                        @for($i = 0; $i <= 4; $i++)
-                                            <option value="{{ $i }}" {{ old('max_programadores', 0) == $i ? 'selected' : '' }}>{{ $i }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
-
-                                {{-- Diseñadores --}}
-                                <div>
-                                    <label for="max_disenadores" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        🎨 Diseñadores
-                                    </label>
-                                    <select id="max_disenadores" name="max_disenadores" 
-                                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500"
-                                            onchange="validarTotalVacantes()">
-                                        @for($i = 0; $i <= 4; $i++)
-                                            <option value="{{ $i }}" {{ old('max_disenadores', 0) == $i ? 'selected' : '' }}>{{ $i }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
-
-                                {{-- Testers --}}
-                                <div>
-                                    <label for="max_testers" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        🧪 Testers
-                                    </label>
-                                    <select id="max_testers" name="max_testers" 
-                                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500"
-                                            onchange="validarTotalVacantes()">
-                                        @for($i = 0; $i <= 4; $i++)
-                                            <option value="{{ $i }}" {{ old('max_testers', 0) == $i ? 'selected' : '' }}>{{ $i }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
+                                @foreach($perfilesDisponibles as $perfil)
+                                    <div>
+                                        <label for="rol_{{ $perfil->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            @php
+                                                // Emojis por rol (puedes personalizar)
+                                                $emoji = match($perfil->nombre) {
+                                                    'Programador' => '👨‍💻',
+                                                    'Diseñador' => '🎨',
+                                                    'Tester' => '🧪',
+                                                    default => '👤'
+                                                };
+                                            @endphp
+                                            {{ $emoji }} {{ $perfil->nombre }}
+                                        </label>
+                                        <select id="rol_{{ $perfil->id }}" 
+                                                name="rol_limites[{{ $loop->index }}][max_vacantes]" 
+                                                class="rol-selector w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-indigo-500"
+                                                onchange="validarTotalVacantes()">
+                                            @for($i = 0; $i <= 4; $i++)
+                                                <option value="{{ $i }}" {{ old("rol_limites.{$loop->index}.max_vacantes", 0) == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                            @endfor
+                                        </select>
+                                        <input type="hidden" name="rol_limites[{{ $loop->index }}][perfil_id]" value="{{ $perfil->id }}">
+                                    </div>
+                                @endforeach
                             </div>
 
                             {{-- Contador Total --}}
@@ -105,7 +89,7 @@
                                     ⚠️ El total no puede exceder 4 vacantes
                                 </div>
                             </div>
-                            <x-input-error :messages="$errors->get('max_programadores')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('rol_limites')" class="mt-2" />
                         </div>
                     </div>
                 </div>
@@ -154,21 +138,22 @@
     @push('scripts')
     <script>
     function validarTotalVacantes() {
-        const programadores = parseInt(document.getElementById('max_programadores')?.value) || 0;
-        const disenadores = parseInt(document.getElementById('max_disenadores')?.value) || 0;
-        const testers = parseInt(document.getElementById('max_testers')?.value) || 0;
+        // Obtener todos los selectores de roles dinámicamente
+        const selectores = document.querySelectorAll('.rol-selector');
+        let total = 0;
+        let rolesConVacantes = 0;
         
-        const total = programadores + disenadores + testers;
+        selectores.forEach(selector => {
+            const valor = parseInt(selector.value) || 0;
+            total += valor;
+            if (valor > 0) rolesConVacantes++;
+        });
+        
+        // Actualizar contador
         const totalElement = document.getElementById('total-vacantes');
         if (totalElement) {
             totalElement.textContent = total;
         }
-        
-        // Contar tipos de roles con vacantes
-        let rolesConVacantes = 0;
-        if (programadores > 0) rolesConVacantes++;
-        if (disenadores > 0) rolesConVacantes++;
-        if (testers > 0) rolesConVacantes++;
         
         const errorDiv = document.getElementById('error-vacantes');
         const submitBtn = document.querySelector('button[type="submit"], .ml-3');
@@ -181,10 +166,10 @@
             hayError = true;
             mensajeError = '⚠️ El total no puede exceder 4 vacantes';
         }
-        // Validar diversidad de roles
-        else if (total > 0 && rolesConVacantes < 2) {
+        // Validar diversidad de roles (al menos 3 tipos diferentes)
+        else if (total > 0 && rolesConVacantes < 3) {
             hayError = true;
-            mensajeError = '⚠️ Debes seleccionar al menos 2 tipos de roles diferentes';
+            mensajeError = '⚠️ Debes seleccionar al menos 3 tipos de roles diferentes';
         }
         
         if (hayError) {

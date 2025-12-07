@@ -27,7 +27,12 @@ class EquipoController extends Controller
             ->orderBy('fecha_inicio', 'asc')
             ->get();
 
-        return view('participante.equipos.create', compact('eventosDisponibles'));
+        // Traemos todos los perfiles excepto "Líder de Proyecto"
+        $perfilesDisponibles = \App\Models\Perfil::where('nombre', '!=', 'Líder de Proyecto')
+            ->orderBy('nombre', 'asc')
+            ->get();
+
+        return view('participante.equipos.create', compact('eventosDisponibles', 'perfilesDisponibles'));
     }
 
     public function store(Request $request)
@@ -39,26 +44,25 @@ class EquipoController extends Controller
             'nombre_proyecto' => 'required|string|max:100',
             'descripcion_proyecto' => 'required|string|max:500',
             'repositorio_url' => 'nullable|url|max:255',
-            // NUEVAS VALIDACIONES DE ROLES
-            'max_programadores' => 'required|integer|min:0|max:4',
-            'max_disenadores' => 'required|integer|min:0|max:4',
-            'max_testers' => 'required|integer|min:0|max:4',
+            // VALIDACIONES DINÁMICAS DE ROLES
+            'rol_limites' => 'required|array|min:1',
+            'rol_limites.*.perfil_id' => 'required|exists:perfiles,id',
+            'rol_limites.*.max_vacantes' => 'required|integer|min:0|max:4',
         ]);
 
         // Validación personalizada: Total ≤ 4
-        $totalVacantes = $request->max_programadores + $request->max_disenadores + $request->max_testers;
+        $totalVacantes = array_sum(array_column($request->rol_limites, 'max_vacantes'));
         if ($totalVacantes > 4) {
-            return back()->withErrors(['max_programadores' => 'El total de vacantes no puede exceder 4 miembros.'])->withInput();
+            return back()->withErrors(['rol_limites' => 'El total de vacantes no puede exceder 4 miembros.'])->withInput();
         }
 
-        // NUEVA Validación: Diversidad de roles (al menos 2 tipos diferentes)
-        $rolesConVacantes = 0;
-        if ($request->max_programadores > 0) $rolesConVacantes++;
-        if ($request->max_disenadores > 0) $rolesConVacantes++;
-        if ($request->max_testers > 0) $rolesConVacantes++;
+        // NUEVA Validación: Diversidad de roles (al menos 3 tipos diferentes)
+        $rolesConVacantes = count(array_filter($request->rol_limites, function($rol) {
+            return $rol['max_vacantes'] > 0;
+        }));
         
-        if ($totalVacantes > 0 && $rolesConVacantes < 2) {
-            return back()->withErrors(['max_programadores' => 'Debes tener al menos 2 tipos de roles diferentes en tu equipo para fomentar la diversidad.'])->withInput();
+        if ($totalVacantes > 0 && $rolesConVacantes < 3) {
+            return back()->withErrors(['rol_limites' => 'Debes tener al menos 3 tipos de roles diferentes en tu equipo para fomentar la diversidad.'])->withInput();
         }
 
         try {
@@ -71,13 +75,20 @@ class EquipoController extends Controller
                     throw new \Exception("No tienes un perfil de participante registrado.");
                 }
 
-                // 1. Crear Equipo CON LÍMITES
+                // 1. Crear Equipo (sin límites en columnas antiguas)
                 $equipo = Equipo::create([
                     'nombre' => $request->nombre_equipo,
-                    'max_programadores' => $request->max_programadores,
-                    'max_disenadores' => $request->max_disenadores,
-                    'max_testers' => $request->max_testers,
                 ]);
+
+                // 1.5. Guardar límites dinámicos en tabla equipo_rol_limites
+                foreach ($request->rol_limites as $rolLimite) {
+                    if ($rolLimite['max_vacantes'] > 0) {
+                        $equipo->rolLimites()->create([
+                            'perfil_id' => $rolLimite['perfil_id'],
+                            'max_vacantes' => $rolLimite['max_vacantes'],
+                        ]);
+                    }
+                }
 
                 // 2. Crear Proyecto
                 $equipo->proyecto()->create([
