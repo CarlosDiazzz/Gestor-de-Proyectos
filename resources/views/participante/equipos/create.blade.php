@@ -164,11 +164,34 @@
             totalElement.textContent = total;
         }
         
+        // Contar tipos de roles con vacantes
+        let rolesConVacantes = 0;
+        if (programadores > 0) rolesConVacantes++;
+        if (disenadores > 0) rolesConVacantes++;
+        if (testers > 0) rolesConVacantes++;
+        
         const errorDiv = document.getElementById('error-vacantes');
         const submitBtn = document.querySelector('button[type="submit"], .ml-3');
         
+        let hayError = false;
+        let mensajeError = '';
+        
+        // Validar total máximo
         if (total > 4) {
-            errorDiv?.classList.remove('hidden');
+            hayError = true;
+            mensajeError = '⚠️ El total no puede exceder 4 vacantes';
+        }
+        // Validar diversidad de roles
+        else if (total > 0 && rolesConVacantes < 2) {
+            hayError = true;
+            mensajeError = '⚠️ Debes seleccionar al menos 2 tipos de roles diferentes';
+        }
+        
+        if (hayError) {
+            if (errorDiv) {
+                errorDiv.classList.remove('hidden');
+                errorDiv.textContent = mensajeError;
+            }
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.classList.add('opacity-50', 'cursor-not-allowed');

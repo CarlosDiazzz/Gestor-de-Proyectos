@@ -51,6 +51,16 @@ class EquipoController extends Controller
             return back()->withErrors(['max_programadores' => 'El total de vacantes no puede exceder 4 miembros.'])->withInput();
         }
 
+        // NUEVA Validación: Diversidad de roles (al menos 2 tipos diferentes)
+        $rolesConVacantes = 0;
+        if ($request->max_programadores > 0) $rolesConVacantes++;
+        if ($request->max_disenadores > 0) $rolesConVacantes++;
+        if ($request->max_testers > 0) $rolesConVacantes++;
+        
+        if ($totalVacantes > 0 && $rolesConVacantes < 2) {
+            return back()->withErrors(['max_programadores' => 'Debes tener al menos 2 tipos de roles diferentes en tu equipo para fomentar la diversidad.'])->withInput();
+        }
+
         try {
             DB::transaction(function () use ($request) {
                 $user = Auth::user();
