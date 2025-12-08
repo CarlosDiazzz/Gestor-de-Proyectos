@@ -68,17 +68,43 @@
                                     </div>
                                 @endif
 
-                                {{-- Acciones --}}
-                                <div class="pt-4 border-t border-gray-200 dark:border-gray-700 flex gap-3">
-                                    <form method="POST" action="{{ route('participante.solicitudes.aceptar', $solicitud) }}" class="flex-1">
+                                {{-- Rol Solicitado --}}
+                                @if($solicitud->perfil_solicitado_id)
+                                    <div class="mb-4 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                                        <p class="text-sm text-purple-800 dark:text-purple-300">
+                                            <span class="font-semibold">Rol Solicitado:</span> {{ $solicitud->perfilSugerido->nombre ?? 'N/A' }}
+                                        </p>
+                                    </div>
+                                @endif
+
+                                {{-- Acciones con opción de cambiar rol --}}
+                                <div class="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+                                    <form method="POST" action="{{ route('participante.solicitudes.aceptar', $solicitud) }}" class="space-y-3">
                                         @csrf
+                                        
+                                        {{-- Selector de rol para el líder (opcional) --}}
+                                        <div>
+                                            <label class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2 block">Rol a Asignar (opcional - si no especificas, se usará el solicitado)</label>
+                                            <select name="perfil_id" class="w-full rounded-lg border-gray-300 dark:bg-gray-900 dark:border-gray-600 dark:text-white text-sm p-2 focus:ring-indigo-500">
+                                                <option value="">-- Usar rol solicitado --</option>
+                                                @php
+                                                    $rolesEquipo = $solicitud->equipo->getRolesDisponibles();
+                                                @endphp
+                                                @foreach($rolesEquipo as $rol)
+                                                    <option value="{{ $rol['id'] }}">
+                                                        {{ $rol['nombre'] }} ({{ $rol['disponibles'] }}/{{ $rol['total'] }} vacantes)
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
                                         <button type="submit" class="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-bold text-sm rounded-lg shadow-md hover:shadow-lg transition-all inline-flex items-center justify-center gap-2">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                             Aceptar
                                         </button>
                                     </form>
 
-                                    <form method="POST" action="{{ route('participante.solicitudes.rechazar', $solicitud) }}" class="flex-1">
+                                    <form method="POST" action="{{ route('participante.solicitudes.rechazar', $solicitud) }}">
                                         @csrf
                                         <button type="submit" class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg shadow-md hover:shadow-lg transition-all inline-flex items-center justify-center gap-2" onclick="return confirm('¿Estás seguro de rechazar esta solicitud?')">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>

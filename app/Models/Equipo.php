@@ -12,7 +12,7 @@ class Equipo extends Model
 
     protected $table = 'equipos';
 
-    protected $fillable = ['nombre'];
+    protected $fillable = ['nombre', 'max_programadores', 'max_disenadores', 'max_testers'];
 
     public function proyecto()
     {
@@ -65,5 +65,77 @@ class Equipo extends Model
                 $this->participantes()->updateExistingPivot($nuevoLider->id, ['perfil_id' => $idPerfilLider]);
             }
         }
+    }
+
+    public function getConteoRoles()
+    {
+        return [
+            'programadores' => $this->participantes()->wherePivot('perfil_id', 1)->count(),
+            'disenadores' => $this->participantes()->wherePivot('perfil_id', 2)->count(),
+            'testers' => $this->participantes()->wherePivot('perfil_id', 4)->count(),
+            'lider' => $this->participantes()->wherePivot('perfil_id', 3)->count(),
+        ];
+    }
+
+    public function tieneVacantesParaRol($perfilId)
+    {
+        $conteo = $this->getConteoRoles();
+        
+        switch ($perfilId) {
+            case 1: // Programador
+                return $conteo['programadores'] < $this->max_programadores;
+            case 2: // Diseñador
+                return $conteo['disenadores'] < $this->max_disenadores;
+            case 4: // Tester
+                return $conteo['testers'] < $this->max_testers;
+            default:
+                return false;
+        }
+    }
+
+    public function getRolesDisponibles()
+    {
+        $roles = [];
+        $conteo = $this->getConteoRoles();
+        
+        // Programador (ID 1)
+        $programadoresDisponibles = max(0, $this->max_programadores - $conteo['programadores']);
+        if ($programadoresDisponibles > 0) {
+            $roles[] = [
+                'id' => 1,
+                'nombre' => 'Programador',
+                'disponibles' => $programadoresDisponibles,
+                'total' => $this->max_programadores
+            ];
+        }
+        
+        // Diseñador (ID 2)
+        $disenadoresDisponibles = max(0, $this->max_disenadores - $conteo['disenadores']);
+        if ($disenadoresDisponibles > 0) {
+            $roles[] = [
+                'id' => 2,
+                'nombre' => 'Diseñador',
+                'disponibles' => $disenadoresDisponibles,
+                'total' => $this->max_disenadores
+            ];
+        }
+        
+        // Tester (ID 4)
+        $testersDisponibles = max(0, $this->max_testers - $conteo['testers']);
+        if ($testersDisponibles > 0) {
+            $roles[] = [
+                'id' => 4,
+                'nombre' => 'Tester',
+                'disponibles' => $testersDisponibles,
+                'total' => $this->max_testers
+            ];
+        }
+        
+        return $roles;
+    }
+
+    public function estaCompleto()
+    {
+        return $this->participantes()->count() >= 5;
     }
 }

@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="flex items-center justify-between mt-6">
-                        <a href="{{ route('admin.eventos.show', $criterio->evento_id) }}" class="text-gray-600 dark:text-gray-400 underline text-sm hover:text-gray-900 dark:hover:text-gray-100">Cancelar</a>
+                        <a href="{{ url()->previous() }}" class="text-gray-600 dark:text-gray-400 underline text-sm hover:text-gray-900 dark:hover:text-gray-100">Cancelar</a>
                         
                         <x-primary-button>
                             {{ __('Actualizar') }}

@@ -76,6 +76,22 @@
 
                         {{-- Mensaje de Solicitud --}}
                         <div>
+                            <x-input-label for="perfil_solicitado_id" value="Rol Solicitado *" class="mb-2 font-bold" />
+                            <select id="perfil_solicitado_id" name="perfil_solicitado_id" required
+                                class="w-full rounded-xl border-gray-300 dark:bg-gray-900 dark:border-gray-600 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 shadow-sm p-4 text-sm transition-all">
+                                <option value="">-- Selecciona un rol --</option>
+                                @foreach($rolesDisponibles as $rol)
+                                    <option value="{{ $rol['id'] }}">
+                                        {{ $rol['nombre'] }} ({{ $rol['disponibles'] }}/{{ $rol['total'] }} vacantes)
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Selecciona el rol con el que deseas unirte al equipo</p>
+                            <x-input-error :messages="$errors->get('perfil_solicitado_id')" class="mt-2" />
+                        </div>
+
+                        {{-- Mensaje de Solicitud --}}
+                        <div>
                             <x-input-label for="mensaje" value="Mensaje (Opcional)" class="mb-2 font-bold" />
                             <textarea id="mensaje" name="mensaje" rows="5" 
                                 class="w-full rounded-xl border-gray-300 dark:bg-gray-900 dark:border-gray-600 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 shadow-sm p-4 text-sm leading-relaxed placeholder-gray-400 transition-all"

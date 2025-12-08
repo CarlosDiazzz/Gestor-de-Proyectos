@@ -15,13 +15,15 @@ class SolicitudEquipoController extends Controller
     public function showCrearSolicitud(Request $request, Equipo $equipo)
     {
         $participante = $request->user()->participante;
+        $rolesDisponibles = $equipo->getRolesDisponibles();
 
-        return view('participante.solicitudes.crear-solicitud', compact('equipo', 'participante'));
+        return view('participante.solicitudes.crear-solicitud', compact('equipo', 'participante', 'rolesDisponibles'));
     }
 
     public function crearSolicitud(Request $request, Equipo $equipo)
     {
         $request->validate([
+            'perfil_solicitado_id' => 'required|exists:perfiles,id',
             'mensaje' => 'nullable|string|max:500',
         ]);
 
@@ -47,11 +49,18 @@ class SolicitudEquipoController extends Controller
             return redirect()->route('participante.dashboard')->with('error', 'Ya tienes una solicitud pendiente para este equipo. Espera a que el líder responda.');
         }
 
+        // Validar que el rol tenga vacantes
+        if (!$equipo->tieneVacantesParaRol($request->perfil_solicitado_id)) {
+            return redirect()->route('participante.solicitudes.crear.form', $equipo)
+                ->with('error', 'El rol seleccionado ya no tiene vacantes disponibles.');
+        }
+
         try {
             // Crear solicitud
             $solicitud = SolicitudEquipo::create([
                 'equipo_id' => $equipo->id,
                 'participante_id' => $participante->id,
+                'perfil_solicitado_id' => $request->perfil_solicitado_id,
                 'mensaje' => $request->mensaje,
                 'estado' => 'pendiente'
             ]);
@@ -92,7 +101,7 @@ class SolicitudEquipoController extends Controller
         }
 
         $solicitudes = $equipo->solicitudesPendientes()
-            ->with('participante.user', 'participante.carrera')
+            ->with(['participante.user', 'participante.carrera', 'perfilSugerido'])
             ->latest()
             ->paginate(10);
 
@@ -101,6 +110,10 @@ class SolicitudEquipoController extends Controller
 
     public function aceptar(Request $request, SolicitudEquipo $solicitud)
     {
+        $request->validate([
+            'perfil_id' => 'nullable|exists:perfiles,id',
+        ]);
+
         $lider = $request->user()->participante;
 
         // Verificar que sea el líder del equipo
@@ -113,6 +126,19 @@ class SolicitudEquipoController extends Controller
             return back()->with('error', 'Esta solicitud ya ha sido respondida.');
         }
 
+        // Verificar que el equipo aún tenga espacio
+        if ($solicitud->equipo->estaCompleto()) {
+            return back()->with('error', 'El equipo ya está completo.');
+        }
+
+        // Determinar el rol a asignar
+        $perfilId = $request->perfil_id ?? $solicitud->perfil_solicitado_id ?? 1;
+
+        // Verificar que el rol tenga vacantes
+        if (!$solicitud->equipo->tieneVacantesParaRol($perfilId)) {
+            return back()->with('error', 'El rol seleccionado ya no tiene vacantes.');
+        }
+
         // Aceptar solicitud
         $solicitud->update([
             'estado' => 'aceptada',
@@ -120,10 +146,10 @@ class SolicitudEquipoController extends Controller
             'respondida_en' => now()
         ]);
 
-        // Agregar al equipo con perfil de Programador
+        // Agregar al equipo con el rol especificado
         $solicitud->equipo->participantes()->attach(
             $solicitud->participante_id,
-            ['perfil_id' => 1]
+            ['perfil_id' => $perfilId]
         );
 
         // AUTOMÁTICAMENTE: Rechazar todas las otras solicitudes pendientes de este participante
