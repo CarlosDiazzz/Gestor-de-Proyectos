@@ -7,14 +7,17 @@ use App\Models\User;
 use App\Models\Rol;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
-class EventoUserSeeder extends Seeder
+class JuecesEventosSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
+        DB::table('evento_user')->truncate();
+
         $eventos = Evento::all();
         $jueces = User::whereHas('roles', function ($query) {
             $query->where('nombre', 'Juez');
