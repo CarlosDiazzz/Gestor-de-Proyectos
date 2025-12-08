@@ -46,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Perfil de Usuario (Breeze)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Redirección Centralizada (Usa tu lógica del Modelo User)
