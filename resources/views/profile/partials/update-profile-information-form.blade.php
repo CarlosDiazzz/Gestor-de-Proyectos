@@ -69,7 +69,7 @@
                     <label class="mb-2.5 block text-black dark:text-white font-medium">
                         Telefono
                     </label>
-                    <input type="number" name="telefono" value="{{ old('telefono', $user->participante->telefono ?? '') }}" required
+                    <input type="tel" name="telefono" value="{{ old('telefono', $user->participante->telefono ?? '') }}" required
                         class="w-full rounded border-[1.5px] border-gray-300 bg-transparent py-3 px-5 font-medium outline-none transition focus:border-indigo-600 active:border-indigo-600 disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-600"
                         pattern="[0-9]{10}" maxlength="10" minlength="10" inputmode="numeric" title="Debe tener exactamente 10 dígitos numéricos" />
                     <x-input-error class="mt-2" :messages="$errors->get('telefono')" />
