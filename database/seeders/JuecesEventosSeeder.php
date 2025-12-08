@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 use App\Models\Evento;
 use App\Models\User;
 use App\Models\Rol;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 
-class EventoUserSeeder extends Seeder
+class JuecesEventosSeeder extends Seeder
 {
     /**
      * Run the database seeds.
