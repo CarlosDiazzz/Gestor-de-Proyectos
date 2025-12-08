@@ -24,25 +24,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Schema::disableForeignKeyConstraints();
-        
-        // Truncate tables
-        User::truncate();
-        Rol::truncate();
-        Perfil::truncate();
-        Carrera::truncate();
-        Evento::truncate();
-        CriterioEvaluacion::truncate();
-        Participante::truncate();
-        Equipo::truncate();
-        Proyecto::truncate();
-        Avance::truncate();
-        DB::table('user_rol')->truncate();
-        DB::table('equipo_participante')->truncate();
-        DB::table('calificaciones')->truncate();
-        DB::table('evento_user')->truncate();
-
-        Schema::enableForeignKeyConstraints();
+        $this->call(LimpiezaSeeder::class);
 
         // Create Roles
         $rolAdmin = Rol::create(['nombre' => 'Admin']);
