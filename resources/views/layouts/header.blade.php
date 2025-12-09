@@ -35,11 +35,23 @@
                         <span class="block text-xs text-gray-500 dark:text-gray-400">{{ Auth::user()->email }}</span>
                     </span>
 
-                    <span class="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 overflow-hidden flex items-center justify-center">
-                        <svg class="h-6 w-6 text-gray-400 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                    </span>
+                    <div class="relative">
+                        <span class="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 overflow-hidden flex items-center justify-center">
+                            @php
+                                $avatarPath = 'storage/avatars/' . Auth::id() . '.jpg';
+                                $hasAvatar = file_exists(public_path($avatarPath));
+                            @endphp
+                            
+                            <img id="header-avatar-img" 
+                                 src="{{ $hasAvatar ? asset($avatarPath) . '?v=' . time() : '' }}" 
+                                 alt="Avatar" 
+                                 class="h-full w-full object-cover {{ $hasAvatar ? '' : 'hidden' }}">
+                                 
+                            <svg id="header-avatar-default" class="{{ $hasAvatar ? 'hidden' : '' }} h-6 w-6 text-gray-400 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </span>
+                    </div>
 
                     <svg :class="dropdownOpen && 'rotate-180'" class="hidden fill-current sm:block w-4 h-4 text-gray-500 transition-transform duration-200" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />

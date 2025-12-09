@@ -21,7 +21,8 @@
                     Nombre Completo
                 </label>
                 <input type="text" name="name" value="{{ old('name', $user->name) }}" required autofocus autocomplete="name"
-                    class="w-full rounded border-[1.5px] border-gray-300 bg-transparent py-3 px-5 font-medium outline-none transition focus:border-indigo-600 active:border-indigo-600 disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-600" />
+                    class="w-full rounded border-[1.5px] border-gray-300 bg-transparent py-3 px-5 font-medium outline-none transition focus:border-indigo-600 active:border-indigo-600 disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-600"
+                    pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo letras y espacios" />
                 <x-input-error class="mt-2" :messages="$errors->get('name')" />
             </div>
 
@@ -58,7 +59,8 @@
                         Número de Control
                     </label>
                     <input type="text" name="no_control" value="{{ old('no_control', $user->participante->no_control ?? '') }}" required
-                        class="w-full rounded border-[1.5px] border-gray-300 bg-transparent py-3 px-5 font-medium outline-none transition focus:border-indigo-600 active:border-indigo-600 disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-600" />
+                        class="w-full rounded border-[1.5px] border-gray-300 bg-transparent py-3 px-5 font-medium outline-none transition focus:border-indigo-600 active:border-indigo-600 disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-600"
+                        pattern="[0-9]{8}" maxlength="8" minlength="8" inputmode="numeric" title="Debe tener exactamente 8 dígitos numéricos" />
                     <x-input-error class="mt-2" :messages="$errors->get('no_control')" />
                 </div>
 
@@ -67,8 +69,9 @@
                     <label class="mb-2.5 block text-black dark:text-white font-medium">
                         Telefono
                     </label>
-                    <input type="number" name="telefono" value="{{ old('telefono', $user->participante->telefono ?? '') }}" required
-                        class="w-full rounded border-[1.5px] border-gray-300 bg-transparent py-3 px-5 font-medium outline-none transition focus:border-indigo-600 active:border-indigo-600 disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-600" />
+                    <input type="tel" name="telefono" value="{{ old('telefono', $user->participante->telefono ?? '') }}" required
+                        class="w-full rounded border-[1.5px] border-gray-300 bg-transparent py-3 px-5 font-medium outline-none transition focus:border-indigo-600 active:border-indigo-600 disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-600"
+                        pattern="[0-9]{10}" maxlength="10" minlength="10" inputmode="numeric" title="Debe tener exactamente 10 dígitos numéricos" />
                     <x-input-error class="mt-2" :messages="$errors->get('telefono')" />
                 </div>
                 {{-- Carrera --}}
@@ -78,7 +81,7 @@
                     </label>
                     <div class="relative z-20 bg-transparent dark:bg-gray-700 rounded">
                         <select name="carrera_id"
-                            class="relative z-20 w-full appearance-none rounded border-[1.5px] border-gray-300 bg-transparent py-3 px-5 outline-none transition focus:border-indigo-600 active:border-indigo-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-600">
+                            class="relative z-20 w-full rounded border-[1.5px] border-gray-300 bg-transparent py-3 px-5 outline-none transition focus:border-indigo-600 active:border-indigo-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-indigo-600">
                             @foreach($carreras as $carrera)
                                 <option value="{{ $carrera->id }}" 
                                     {{ (old('carrera_id') ?? ($user->participante->carrera_id ?? '')) == $carrera->id ? 'selected' : '' }}>
@@ -86,9 +89,6 @@
                                 </option>
                             @endforeach
                         </select>
-                        <span class="absolute top-1/2 right-4 z-30 -translate-y-1/2">
-                            <svg class="fill-current text-gray-500 dark:text-gray-400" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="currentColor"></path></svg>
-                        </span>
                     </div>
                     <x-input-error class="mt-2" :messages="$errors->get('carrera_id')" />
                 </div>

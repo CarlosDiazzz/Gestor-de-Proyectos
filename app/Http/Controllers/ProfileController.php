@@ -8,10 +8,44 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'max:1024'], // Max 1MB
+        ]);
+
+        $user = $request->user();
+        
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $filename = $user->id . '.jpg';
+            
+            // Asegurar que el directorio existe
+            if (!Storage::disk('public')->exists('avatars')) {
+                Storage::disk('public')->makeDirectory('avatars');
+            }
+
+            // Guardar imagen (sobrescribir si existe)
+            // Usamos intervention/image si estuviera disponible, pero usaremos storage raw
+            // Forzamos la extensión a .jpg renombrando si es necesario al guardar
+            // Para simplicidad en este entorno sin BD, guardamos directamente
+            $path = $file->storeAs('avatars', $filename, 'public');
+
+            return response()->json([
+                'success' => true, 
+                'message' => 'Avatar actualizado correctamente',
+                'path' => Storage::url($path) . '?v=' . time()
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'No se subió ningún archivo'], 400);
+    }
+
     /**
      * Display the user's profile form.
      */

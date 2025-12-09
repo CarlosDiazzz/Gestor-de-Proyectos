@@ -19,14 +19,95 @@
             {{-- Imagen de fondo opcional o barra de color --}}
             
             <div class="px-6 pb-6 lg:pb-8 xl:pb-10">
-                <div class="relative z-30 mx-auto -mt-16 h-32 w-32 rounded-full bg-white/20 p-1 backdrop-blur sm:h-40 sm:w-40 sm:p-2">
+                <div class="relative z-30 mx-auto -mt-16 h-32 w-32 rounded-full bg-white/20 p-1 backdrop-blur sm:h-40 sm:w-40 sm:p-2 group">
                     <div class="relative flex h-full w-full items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden border-4 border-white dark:border-gray-800 shadow-lg">
-                        {{-- Avatar con Iniciales --}}
-                        <span class="text-4xl font-bold text-gray-500 dark:text-gray-300">
+                        @php
+                            $avatarPath = 'storage/avatars/' . Auth::id() . '.jpg';
+                            $hasAvatar = file_exists(public_path($avatarPath));
+                        @endphp
+                        
+                        <img id="profile-avatar-img" 
+                             src="{{ $hasAvatar ? asset($avatarPath) . '?v=' . time() : '' }}" 
+                             alt="Avatar" 
+                             class="h-full w-full object-cover {{ $hasAvatar ? '' : 'hidden' }}">
+
+                        <span id="profile-avatar-initials" class="text-4xl font-bold text-gray-500 dark:text-gray-300 {{ $hasAvatar ? 'hidden' : '' }}">
                             {{ substr($user->name, 0, 1) }}
                         </span>
                     </div>
+
+                    {{-- Botón de Editar (Lápiz) - Superpuesto --}}
+                    <button onclick="document.getElementById('profile-avatar-upload').click()" 
+                            class="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white dark:bg-gray-800 rounded-full p-2 border border-gray-200 dark:border-gray-600 shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer z-40 group-hover:scale-110"
+                            title="Cambiar foto de perfil">
+                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                    </button>
+
+                    {{-- Input oculto para subir archivo --}}
+                    <form id="profile-avatar-form" enctype="multipart/form-data" class="hidden">
+                        @csrf
+                        <input type="file" id="profile-avatar-upload" name="avatar" accept="image/jpeg,image/png,image/jpg" onchange="uploadProfileAvatar(this)">
+                    </form>
                 </div>
+                
+                <script>
+                    function uploadProfileAvatar(input) {
+                        if (input.files && input.files[0]) {
+                            const formData = new FormData();
+                            formData.append('avatar', input.files[0]);
+                            formData.append('_token', '{{ csrf_token() }}');
+
+                            // Mostrar estado de carga
+                            const img = document.getElementById('profile-avatar-img');
+                            const initials = document.getElementById('profile-avatar-initials');
+                            
+                            // Si ya había imagen, bajar opacidad. Si no, quizás mostrar un spinner o algo, pero por ahora solo lógica visual simple
+                            if (!img.classList.contains('hidden')) {
+                                img.style.opacity = '0.5';
+                            }
+
+                            fetch('{{ route("profile.avatar") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Actualizar imagen con timestamp
+                                    img.src = data.path; 
+                                    img.classList.remove('hidden');
+                                    initials.classList.add('hidden');
+                                    
+                                    img.style.opacity = '1';
+                                    
+                                    // Actualizar también la imagen del header si existe en el DOM
+                                    const headerImg = document.getElementById('header-avatar-img');
+                                    const headerDefault = document.getElementById('header-avatar-default');
+                                    if (headerImg) {
+                                        headerImg.src = data.path;
+                                        headerImg.classList.remove('hidden');
+                                        if (headerDefault) headerDefault.classList.add('hidden');
+                                    }
+                                    
+                                    console.log('Avatar actualizado correctamente');
+                                } else {
+                                    alert('Error: ' + (data.message || 'Error desconocido'));
+                                    img.style.opacity = '1';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Error de conexión');
+                                img.style.opacity = '1';
+                            });
+                        }
+                    }
+                </script>
                 
                 <div class="mt-4 text-center">
                     <h3 class="mb-1.5 text-2xl font-semibold text-black dark:text-white">
