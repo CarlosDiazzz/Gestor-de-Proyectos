@@ -286,7 +286,7 @@
                             <div>
                                 <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Calificación Global</p>
                                 <h4 class="text-xl font-bold text-gray-800 dark:text-white mt-1">
-                                    {{ number_format($puntajeTotal * 10, 1) }} <span
+                                    {{ number_format($puntajeTotal, 1) }} <span
                                         class="text-xs text-gray-400 font-normal">/ 100</span>
                                 </h4>
                             </div>
