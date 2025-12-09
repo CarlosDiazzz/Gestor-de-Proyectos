@@ -145,6 +145,12 @@ class SolicitudEquipoController extends Controller
             return back()->with('error', 'El rol seleccionado ya no tiene vacantes.');
         }
 
+        // Verificar si el participante YA está en el equipo (prevenir duplicados)
+        // Esto puede pasar si aceptó una invitación antes
+        $yaEstaEnEquipo = $solicitud->equipo->participantes()
+            ->where('participante_id', $solicitud->participante_id)
+            ->exists();
+
         // Aceptar solicitud
         $solicitud->update([
             'estado' => 'aceptada',
@@ -152,11 +158,13 @@ class SolicitudEquipoController extends Controller
             'respondida_en' => now()
         ]);
 
-        // Agregar al equipo con el rol especificado
-        $solicitud->equipo->participantes()->attach(
-            $solicitud->participante_id,
-            ['perfil_id' => $perfilId]
-        );
+        // Agregar al equipo SOLO si no está ya
+        if (!$yaEstaEnEquipo) {
+            $solicitud->equipo->participantes()->attach(
+                $solicitud->participante_id,
+                ['perfil_id' => $perfilId]
+            );
+        }
 
         // AUTOMÁTICAMENTE: Rechazar todas las otras solicitudes pendientes de este participante
         SolicitudEquipo::where('participante_id', $solicitud->participante_id)
@@ -165,6 +173,14 @@ class SolicitudEquipoController extends Controller
             ->update([
                 'estado' => 'rechazada',
                 'respondida_por_participante_id' => $lider->id,
+                'respondida_en' => now()
+            ]);
+
+        // AUTOMÁTICAMENTE: Rechazar TODAS las invitaciones pendientes de este participante
+        \App\Models\InvitacionEquipo::where('participante_id', $solicitud->participante_id)
+            ->where('estado', 'pendiente')
+            ->update([
+                'estado' => 'rechazada',
                 'respondida_en' => now()
             ]);
 

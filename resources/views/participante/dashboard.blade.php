@@ -11,7 +11,8 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             {{-- WIDGET DE INVITACIONES PENDIENTES --}}
-            @if($invitaciones_pendientes->isNotEmpty())
+            {{-- Solo mostrar si NO está en equipo y tiene invitaciones pendientes --}}
+            @if(!$equipo && $invitaciones_pendientes->isNotEmpty())
                 <div class="mb-6 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-200 dark:border-blue-800 p-6">
                     <div class="flex items-start justify-between gap-4">
                         <div class="flex-1">
@@ -20,7 +21,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                 </svg>
                                 <h3 class="text-lg font-bold text-blue-900 dark:text-blue-300">
-                                    📧 Tienes {{ $invitaciones_pendientes->count() }} invitación{{ $invitaciones_pendientes->count() > 1 ? 'es' : '' }} pendiente{{ $invitaciones_pendientes->count() > 1 ? 's' : '' }}
+                                    Tienes {{ $invitaciones_pendientes->count() }} invitación{{ $invitaciones_pendientes->count() > 1 ? 'es' : '' }} pendiente{{ $invitaciones_pendientes->count() > 1 ? 's' : '' }}
                                 </h3>
                             </div>
                             <p class="text-sm text-blue-700 dark:text-blue-400 mb-4">

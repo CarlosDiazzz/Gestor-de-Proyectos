@@ -313,6 +313,13 @@ class EquipoController extends Controller
         // Desvincular al participante
         $equipo->participantes()->detach($participante->id);
 
+        // Limpiar TODAS las invitaciones de este participante:
+        // 1. Rechazar invitaciones PENDIENTES de otros equipos
+        // 2. Rechazar invitación ACEPTADA del equipo que acaba de abandonar
+        \App\Models\InvitacionEquipo::where('participante_id', $participante->id)
+            ->where('estado', '!=', 'rechazada')
+            ->update(['estado' => 'rechazada', 'respondida_en' => now()]);
+
         return redirect()->route('participante.dashboard')->with('success', 'Has abandonado el equipo correctamente.');
     }
 }

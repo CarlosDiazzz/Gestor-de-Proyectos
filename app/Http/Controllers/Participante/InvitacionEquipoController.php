@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Equipo;
 use App\Models\Participante;
 use App\Models\InvitacionEquipo;
+use App\Models\SolicitudEquipo;
 use Illuminate\Http\Request;
 
 class InvitacionEquipoController extends Controller
@@ -66,15 +67,22 @@ class InvitacionEquipoController extends Controller
             return back()->with('error', 'Este participante ya está en un equipo.');
         }
 
-        // Verificar que no exista invitación previa PENDIENTE
-        $invitacionExistente = InvitacionEquipo::where('equipo_id', $equipo->id)
+        // Verificar que NO exista invitación PENDIENTE para este equipo-participante
+        $invitacionPendiente = InvitacionEquipo::where('equipo_id', $equipo->id)
             ->where('participante_id', $participante->id)
             ->where('estado', 'pendiente')
             ->first();
 
-        if ($invitacionExistente) {
+        if ($invitacionPendiente) {
             return back()->with('error', 'Ya existe una invitación pendiente para este participante.');
         }
+
+        // IMPORTANTE: Limpiar invitaciones previas (aceptadas o rechazadas) antes de crear nueva
+        // Esto asegura que no hay conflictos con invitaciones viejas
+        \App\Models\InvitacionEquipo::where('equipo_id', $equipo->id)
+            ->where('participante_id', $participante->id)
+            ->where('estado', '!=', 'pendiente')
+            ->delete();
 
         try {
             // Crear invitación
@@ -108,7 +116,17 @@ class InvitacionEquipoController extends Controller
     {
         $participante = $request->user()->participante;
         
+        // Si el participante ya está en un equipo, no puede recibir más invitaciones
+        if ($participante->equipos->isNotEmpty()) {
+            return view('participante.invitaciones.mis-invitaciones', [
+                'invitaciones' => collect(),
+                'message' => 'Ya estás en un equipo. No puedes recibir más invitaciones.',
+            ]);
+        }
+        
+        // Mostrar SOLO invitaciones PENDIENTES (si no tiene equipo)
         $invitaciones = $participante->invitaciones()
+            ->where('estado', 'pendiente')
             ->with('equipo.proyecto', 'enviadaPor.user', 'perfilSugerido')
             ->latest()
             ->paginate(10);
@@ -134,6 +152,11 @@ class InvitacionEquipoController extends Controller
             return back()->with('error', 'Esta invitación ya ha sido respondida.');
         }
 
+        // Verificar que el participante NO esté en otro equipo
+        if ($participante->equipos->isNotEmpty()) {
+            return back()->with('error', 'Ya estás en un equipo. Debes salir primero para aceptar otra invitación.');
+        }
+
         // Verificar que el equipo aún tenga espacio
         if ($invitacion->equipo->estaCompleto()) {
             return back()->with('error', 'El equipo ya está completo.');
@@ -157,11 +180,21 @@ class InvitacionEquipoController extends Controller
             ['perfil_id' => $perfilId]
         );
 
-        // Rechazar otras invitaciones pendientes de este participante
+        // Rechazar todas las otras invitaciones pendientes de este participante (de otros equipos)
         InvitacionEquipo::where('participante_id', $participante->id)
             ->where('estado', 'pendiente')
             ->where('id', '!=', $invitacion->id)
             ->update(['estado' => 'rechazada', 'respondida_en' => now()]);
+
+        // AUTOMÁTICAMENTE: Rechazar TODAS las solicitudes pendientes de este participante
+        // (porque ya está en un equipo y no puede estar en dos)
+        SolicitudEquipo::where('participante_id', $participante->id)
+            ->where('estado', 'pendiente')
+            ->update([
+                'estado' => 'rechazada',
+                'respondida_por_participante_id' => null,
+                'respondida_en' => now()
+            ]);
 
         event(new \App\Events\InvitacionEquipoAceptada($invitacion));
 
