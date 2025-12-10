@@ -70,11 +70,13 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-end">
-                    <a href="{{ route('participante.dashboard') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 underline mr-4">Cancelar</a>
-                    <x-primary-button class="ml-3">
+                <div class="flex items-center justify-end gap-4">
+                    <a href="{{ route('participante.dashboard') }}" class="flex justify-center rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-2 px-6 font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="flex justify-center rounded bg-indigo-600 py-2 px-6 font-medium text-white hover:bg-opacity-90 hover:bg-indigo-700 transition">
                         {{ __('Registrar Todo') }}
-                    </x-primary-button>
+                    </button>
                 </div>
             </form>
         </div>
