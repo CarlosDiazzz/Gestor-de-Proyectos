@@ -98,7 +98,7 @@
                                             </select>
                                         </div>
 
-                                        <button type="submit" class="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-bold text-sm rounded-lg shadow-md hover:shadow-lg transition-all inline-flex items-center justify-center gap-2">
+                                        <button type="submit" class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-lg shadow-md hover:shadow-lg transition-all inline-flex items-center justify-center gap-2">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                             Aceptar
                                         </button>
@@ -106,7 +106,7 @@
 
                                     <form method="POST" action="{{ route('participante.solicitudes.rechazar', $solicitud) }}">
                                         @csrf
-                                        <button type="submit" class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg shadow-md hover:shadow-lg transition-all inline-flex items-center justify-center gap-2" onclick="return confirm('¿Estás seguro de rechazar esta solicitud?')">
+                                        <button type="submit" class="w-full py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white font-bold text-sm rounded-lg shadow-md hover:shadow-lg transition-all inline-flex items-center justify-center gap-2" onclick="return confirm('¿Estás seguro de rechazar esta solicitud?')">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                             Rechazar
                                         </button>
