@@ -25,8 +25,18 @@ class InvitacionEquipoController extends Controller
             return back()->with('error', 'Solo el líder puede enviar invitaciones.');
         }
 
-        // Obtener participantes sin equipo
+        // Obtener participantes sin equipo - SOLO PARTICIPANTES (no jueces ni admins)
         $participantesSinEquipo = Participante::whereDoesntHave('equipos')
+            ->whereHas('user', function ($q) {
+                $q->whereHas('roles', function ($roleQuery) {
+                    // SOLO usuarios con rol "Participante"
+                    $roleQuery->where('nombre', 'Participante');
+                })
+                ->whereDoesntHave('roles', function ($roleQuery) {
+                    // EXCLUIR usuarios con roles de Juez o Admin
+                    $roleQuery->whereIn('nombre', ['Juez', 'Admin']);
+                });
+            })
             ->with('user', 'carrera')
             ->get();
 

@@ -173,8 +173,19 @@ class EquipoController extends Controller
             return redirect()->route('participante.dashboard')->with('error', 'Solo el líder puede gestionar el equipo.');
         }
 
-        // CANDIDATOS: Alumnos activos, QUE NO TENGAN EQUIPO, excluyendo al usuario actual
+        // CANDIDATOS: Alumnos activos, QUE NO TENGAN EQUIPO, SOLO PARTICIPANTES (no jueces ni admins)
         $candidatos = \App\Models\Participante::whereDoesntHave('equipos') // Que no estén en ningún equipo
+            ->whereHas('user', function ($q) {
+                $q->where('id', '!=', Auth::id()) // Excluir al usuario actual
+                  ->whereHas('roles', function ($roleQuery) {
+                      // SOLO usuarios con rol "Participante"
+                      $roleQuery->where('nombre', 'Participante');
+                  })
+                  ->whereDoesntHave('roles', function ($roleQuery) {
+                      // EXCLUIR usuarios con roles de Juez o Admin
+                      $roleQuery->whereIn('nombre', ['Juez', 'Admin']);
+                  });
+            })
             ->with(['user', 'carrera'])
             ->get()
             ->map(function ($p) {

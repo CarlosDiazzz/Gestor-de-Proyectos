@@ -127,59 +127,79 @@
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-visible">
                         
                         <div class="p-6 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/20 rounded-t-2xl">
+                            @php
+                                $participante = Auth::user()->participante;
+                                $lider = $equipo->getLider();
+                                $es_lider = $lider && $lider->id === $participante->id;
+                            @endphp
+                            
                             <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide mb-4">Reclutar Talento</h3>
                             
-                            @if($totalMiembros < 5)
-                                <div class="relative" x-data="{ open: false }">
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            @if($es_lider)
+                                @if($totalMiembros < 5)
+                                    <div class="relative" x-data="{ open: false }">
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                            </div>
+                                            <input type="text" 
+                                                   x-model="search" 
+                                                   @focus="open = true"
+                                                   @click.away="open = false"
+                                                   placeholder="Buscar por nombre..." 
+                                                   class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
                                         </div>
-                                        <input type="text" 
-                                               x-model="search" 
-                                               @focus="open = true"
-                                               @click.away="open = false"
-                                               placeholder="Buscar por nombre..." 
-                                               class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
-                                    </div>
-                                    
-                                    <div x-show="search.length > 0 && filteredParticipants.length > 0" 
-                                         class="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto"
-                                         style="display: none;"
-                                         x-transition:enter="transition ease-out duration-100"
-                                         x-transition:enter-start="opacity-0 scale-95"
-                                         x-transition:enter-end="opacity-100 scale-100">
-                                        <template x-for="p in filteredParticipants" :key="p.id">
-                                            <div @click="selectParticipant(p); open = false" 
-                                                 class="px-4 py-3 hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer border-b last:border-0 border-gray-50 dark:border-gray-700 flex justify-between items-center group">
-                                                <div>
-                                                    <p class="text-sm font-bold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600" x-text="p.name"></p>
-                                                    <p class="text-[10px] text-gray-500 uppercase" x-text="p.carrera"></p>
+                                        
+                                        <div x-show="search.length > 0 && filteredParticipants.length > 0" 
+                                             class="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto"
+                                             style="display: none;"
+                                             x-transition:enter="transition ease-out duration-100"
+                                             x-transition:enter-start="opacity-0 scale-95"
+                                             x-transition:enter-end="opacity-100 scale-100">
+                                            <template x-for="p in filteredParticipants" :key="p.id">
+                                                <div @click="selectParticipant(p); open = false" 
+                                                     class="px-4 py-3 hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer border-b last:border-0 border-gray-50 dark:border-gray-700 flex justify-between items-center group">
+                                                    <div>
+                                                        <p class="text-sm font-bold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600" x-text="p.name"></p>
+                                                        <p class="text-[10px] text-gray-500 uppercase" x-text="p.carrera"></p>
+                                                    </div>
+                                                    <svg class="w-5 h-5 text-gray-300 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                                 </div>
-                                                <svg class="w-5 h-5 text-gray-300 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                            </div>
-                                        </template>
-                                    </div>
+                                            </template>
+                                        </div>
 
-                                    <div x-show="selectedId !== null" x-transition class="mt-4 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
-                                        <div class="flex justify-between items-start mb-3">
-                                            <div>
-                                                <p class="text-[10px] text-indigo-500 font-bold uppercase tracking-wider">Candidato Seleccionado</p>
-                                                <p class="text-sm font-bold text-gray-900 dark:text-gray-100" x-text="selectedName"></p>
+                                        <div x-show="selectedId !== null" x-transition class="mt-4 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                                            <div class="flex justify-between items-start mb-3">
+                                                <div>
+                                                    <p class="text-[10px] text-indigo-500 font-bold uppercase tracking-wider">Candidato Seleccionado</p>
+                                                    <p class="text-sm font-bold text-gray-900 dark:text-gray-100" x-text="selectedName"></p>
+                                                </div>
+                                                <button type="button" @click="resetSelection()" class="text-gray-400 hover:text-red-500 transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                </button>
                                             </div>
-                                            <button type="button" @click="resetSelection()" class="text-gray-400 hover:text-red-500 transition-colors">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+
+                                            <button type="button" @click="openInviteModal()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold uppercase tracking-widest shadow-md hover:shadow-lg transition-all">
+                                                Enviar Invitación
                                             </button>
                                         </div>
-
-                                        <button type="button" @click="openInviteModal()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold uppercase tracking-widest shadow-md hover:shadow-lg transition-all">
-                                            Enviar Invitación
-                                        </button>
                                     </div>
-                                </div>
+                                @else
+                                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 text-center">
+                                        <span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Equipo Completo</span>
+                                    </div>
+                                @endif
                             @else
-                                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 text-center">
-                                    <span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Equipo Completo</span>
+                                {{-- Mensaje para no-líderes --}}
+                                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-100 dark:border-blue-800">
+                                    <div class="flex items-start gap-3">
+                                        <svg class="w-5 h-5 text-blue-500 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <p class="text-sm text-blue-700 dark:text-blue-300 font-medium">
+                                            Solo el líder del equipo puede reclutar nuevos miembros.
+                                        </p>
+                                    </div>
                                 </div>
                             @endif
                         </div>
