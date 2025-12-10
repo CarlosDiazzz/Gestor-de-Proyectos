@@ -170,17 +170,19 @@
                 </div>
             </div>
 
-            {{-- 3. ZONA DE PELIGRO --}}
-            <div class="rounded-sm border border-red-100 bg-white shadow-default dark:border-red-900/30 dark:bg-gray-800 sm:p-5 rounded-3xl">
-                <div class="border-b border-red-100 py-4 px-6.5 dark:border-red-900/30">
-                    <h3 class="font-bold text-red-600 dark:text-red-400 text-lg">
-                        Eliminar Cuenta
-                    </h3>
+            {{-- 3. ZONA DE PELIGRO - SOLO ADMIN --}}
+            @if(Auth::user()->hasRole('Admin'))
+                <div class="rounded-sm border border-red-100 bg-white shadow-default dark:border-red-900/30 dark:bg-gray-800 sm:p-5 rounded-3xl">
+                    <div class="border-b border-red-100 py-4 px-6.5 dark:border-red-900/30">
+                        <h3 class="font-bold text-red-600 dark:text-red-400 text-lg">
+                            Eliminar Cuenta
+                        </h3>
+                    </div>
+                    <div class="p-6.5">
+                        @include('profile.partials.delete-user-form')
+                    </div>
                 </div>
-                <div class="p-6.5">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
+            @endif
 
         </div>
     </div>
