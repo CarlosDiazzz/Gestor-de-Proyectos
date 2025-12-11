@@ -302,11 +302,24 @@
 
                         {{-- 2. CONSTANCIAS --}}
                         @if ($equipo && $proyecto && $puntajeTotal > 0)
-                            <div
-                                class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
-                                <div
-                                    class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full blur-xl">
-                                </div>
+                            @php
+                                // Determinar si los certificados están disponibles
+                                $certificados_disponibles = $evento_finalizado ?? false;
+                                
+                                // Clases CSS para botones
+                                $claseBotonDisabled = 'opacity-50 cursor-not-allowed pointer-events-none';
+                                $claseBotonIndividual = $certificados_disponibles 
+                                    ? 'bg-white/20 hover:bg-white/30 border border-white/30' 
+                                    : 'bg-white/10 border border-white/20 ' . $claseBotonDisabled;
+                                
+                                $claseBotonEquipo = $certificados_disponibles 
+                                    ? 'bg-white text-indigo-600 hover:bg-indigo-50' 
+                                    : 'bg-white/30 text-white/50 ' . $claseBotonDisabled;
+                            @endphp
+                            
+                            <div class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
+                                <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full blur-xl"></div>
+                                
                                 <h3 class="font-bold text-lg mb-1 flex items-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -315,15 +328,45 @@
                                     </svg>
                                     Certificados
                                 </h3>
-                                <p class="text-indigo-100 text-xs mb-4">Evaluación completada. Descarga tus documentos.
-                                </p>
+                                
+                                @if (!$certificados_disponibles && $evento_inscrito)
+                                    <p class="text-indigo-100 text-xs mb-4">
+                                        Disponibles después del {{ \Carbon\Carbon::parse($evento_inscrito->fecha_fin)->format('d/m/Y') }}
+                                    </p>
+                                @else
+                                    <p class="text-indigo-100 text-xs mb-4">
+                                        Evaluación completada. Descarga tus documentos.
+                                    </p>
+                                @endif
+                                
                                 <div class="space-y-2 relative z-10">
-                                    <a href="{{ route('participante.constancia.imprimir', 'individual') }}"
-                                        target="_blank"
-                                        class="block w-full text-center py-2 px-4 bg-white/20 hover:bg-white/30 border border-white/30 rounded-lg text-xs font-bold uppercase transition backdrop-blur-sm">Individual</a>
-                                    <a href="{{ route('participante.constancia.imprimir', 'equipo') }}"
-                                        target="_blank"
-                                        class="block w-full text-center py-2 px-4 bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg text-xs font-bold uppercase transition shadow-sm">Equipo</a>
+                                    {{-- Certificado Individual - TODOS LO VEN --}}
+                                    <a href="{{ $certificados_disponibles ? route('participante.constancia.imprimir', 'individual') : '#' }}"
+                                       target="{{ $certificados_disponibles ? '_blank' : '_self' }}"
+                                       class="block w-full text-center py-2 px-4 rounded-lg text-xs font-bold uppercase transition backdrop-blur-sm {{ $claseBotonIndividual }}"
+                                       @if(!$certificados_disponibles) onclick="event.preventDefault(); return false;" @endif>
+                                        Individual
+                                        @if(!$certificados_disponibles)
+                                            <svg class="w-3 h-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                            </svg>
+                                        @endif
+                                    </a>
+                                    
+                                    {{-- Certificado de Equipo - SOLO LÍDERES LO VEN --}}
+                                    @if ($es_lider ?? false)
+                                        <a href="{{ $certificados_disponibles ? route('participante.constancia.imprimir', 'equipo') : '#' }}"
+                                           target="{{ $certificados_disponibles ? '_blank' : '_self' }}"
+                                           class="block w-full text-center py-2 px-4 rounded-lg text-xs font-bold uppercase transition shadow-sm {{ $claseBotonEquipo }}"
+                                           @if(!$certificados_disponibles) onclick="event.preventDefault(); return false;" @endif>
+                                            Equipo
+                                            @if(!$certificados_disponibles)
+                                                <svg class="w-3 h-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                </svg>
+                                            @endif
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         @endif

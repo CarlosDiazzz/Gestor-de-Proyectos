@@ -46,6 +46,19 @@ class ParticipanteController extends Controller
             ->with(['equipo.proyecto', 'enviadaPor.user', 'perfilSugerido'])
             ->get() : collect();
 
+        // Determinar si el usuario actual es líder del equipo
+        $es_lider = false;
+        $evento_finalizado = false;
+
+        if ($equipo) {
+            $lider = $equipo->getLider();
+            $es_lider = $lider && $lider->id === $participante->id;
+        }
+
+        if ($proyecto && $proyecto->evento) {
+            $evento_finalizado = now()->isAfter($proyecto->evento->fecha_fin);
+        }
+
         // Variables iniciales
         $chartLabels = [];
         $chartData = []; // Datos crudos (0-10) para el gráfico visual
@@ -113,7 +126,9 @@ class ParticipanteController extends Controller
             'puntajeTotal', // Este ahora es el cálculo exacto ponderado
             'eventos_proximos',
             'solicitudes_pendientes',
-            'invitaciones_pendientes'
+            'invitaciones_pendientes',
+            'es_lider',
+            'evento_finalizado'
         ));
     }
 
@@ -129,6 +144,20 @@ class ParticipanteController extends Controller
         }
 
         $evento = $proyecto->evento;
+
+        // ✅ VALIDACIÓN 1: Evento debe haber terminado
+        if (now()->isBefore($evento->fecha_fin)) {
+            return back()->with('error', 'Los certificados estarán disponibles después del ' . 
+                \Carbon\Carbon::parse($evento->fecha_fin)->format('d/m/Y'));
+        }
+
+        // ✅ VALIDACIÓN 2: Solo líder puede descargar certificado de equipo
+        if ($tipo === 'equipo') {
+            $lider = $equipo->getLider();
+            if (!$lider || $lider->id !== $participante->id) {
+                return back()->with('error', 'Solo el líder del equipo puede descargar el certificado de equipo.');
+            }
+        }
 
         // 1. CALCULAR RANKING (Misma lógica exacta que el Admin para consistencia)
         $todosProyectos = Proyecto::where('evento_id', $evento->id)->with('calificaciones')->get();

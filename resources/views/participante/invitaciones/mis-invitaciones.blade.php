@@ -21,7 +21,8 @@
                     {{ session('success') }}
                 </div>
             @endif
-
+
+
             @if(isset($message))
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
                     <svg class="w-16 h-16 mx-auto text-blue-300 dark:text-blue-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,14 +93,14 @@
                                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700 flex gap-3">
                                         <form action="{{ route('participante.invitaciones.aceptar', $inv) }}" method="POST" class="flex-1">
                                             @csrf
-                                            <button type="submit" class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold text-sm rounded-lg transition-colors flex items-center justify-center gap-2">
+                                            <button type="submit" class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-lg transition-colors flex items-center justify-center gap-2">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                                 Aceptar
                                             </button>
                                         </form>
                                         <form action="{{ route('participante.invitaciones.rechazar', $inv) }}" method="POST" class="flex-1">
                                             @csrf
-                                            <button type="submit" class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-lg transition-colors flex items-center justify-center gap-2">
+                                            <button type="submit" class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold text-sm rounded-lg transition-colors flex items-center justify-center gap-2">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                                 Rechazar
                                             </button>

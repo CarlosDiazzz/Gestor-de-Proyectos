@@ -16,7 +16,7 @@
         </div>
 
         {{-- Contenedor Principal (Card) --}}
-        <div class="rounded-sm border border-gray-200 bg-white shadow-default dark:border-gray-700 dark:bg-gray-800">
+        <div class="rounded-sm border border-gray-200 bg-white shadow-default dark:border-gray-700 dark:bg-gray-800 sm:p-5 rounded-3xl">
             
             <div class="border-b border-gray-200 py-4 px-6.5 dark:border-gray-700">
                 <h3 class="font-semibold text-gray-900 dark:text-white">
@@ -81,9 +81,9 @@
                         <label class="mb-2.5 block text-black dark:text-white font-medium">
                             Rol Asignado <span class="text-red-500">*</span>
                         </label>
-                        <div class="relative z-20 bg-transparent dark:bg-gray-700 rounded">
+                        <div class="relative">
                             <select name="rol_id" required
-                                class="relative z-20 w-full appearance-none rounded border-[1.5px] bg-transparent py-3 px-5 outline-none transition disabled:cursor-default disabled:bg-whiter dark:bg-gray-700
+                                class="w-full rounded border-[1.5px] bg-transparent py-3 px-5 outline-none transition disabled:cursor-default disabled:bg-whiter dark:bg-gray-700
                                 {{ $errors->has('rol_id') 
                                     ? 'border-red-500 text-red-900 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:text-red-500' 
                                     : 'border-gray-300 text-black focus:border-indigo-600 dark:border-gray-600 dark:text-white dark:focus:border-indigo-600' 
@@ -95,9 +95,6 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <span class="absolute top-1/2 right-4 z-30 -translate-y-1/2">
-                                <svg class="fill-current text-gray-500 dark:text-gray-400" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"></path></svg>
-                            </span>
                         </div>
                         <x-input-error :messages="$errors->get('rol_id')" class="mt-2 text-red-500" />
                     </div>

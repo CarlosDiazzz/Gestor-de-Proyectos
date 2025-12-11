@@ -118,6 +118,11 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // ✅ VALIDACIÓN: Solo admin puede eliminar cuentas
+        if (!$request->user()->hasRole('Admin')) {
+            return back()->with('error', 'No tienes permisos para eliminar cuentas.');
+        }
+
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
