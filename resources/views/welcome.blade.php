@@ -234,11 +234,10 @@
                 <div id="book-pages-stack"
                     class="absolute left-1/2 w-[43%] h-[96%] top-[2%] z-10 preserve-3d origin-left">
 
-                    {{-- Página 2 (Participante) --}}
-                    <div id="page-2" class="book-page absolute inset-0 preserve-3d origin-left z-10">
-                        {{-- Frente Página 2 (Derecha inicial) --}}
+                    {{-- Página 3 (Participante) --}}
+                    <div id="page-3" class="book-page absolute inset-0 preserve-3d origin-left z-10">
                         <div
-                            class="page-front absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-r-lg shadow-md">
+                            class="page-front absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-r-lg shadow-md border-l border-gray-200">
                             <div class="flex items-center mb-6">
                                 <div
                                     class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-lg text-white">
@@ -250,33 +249,55 @@
                                 <h3 class="text-2xl font-bold text-gray-800">Participante</h3>
                             </div>
                             <h4 class="text-lg font-semibold text-amber-600 mb-2">Resultados Automáticos</h4>
-                            <p class="text-gray-600 leading-relaxed">
-                                Generación automática de rankings, podios y constancias. Acceso inmediato a tus
-                                evaluaciones y feedback.
+                            <p class="text-gray-600 leading-relaxed text-sm">
+                                Generación automática de rankings. Acceso inmediato a tus evaluaciones.
                             </p>
                         </div>
-                        {{-- Reverso Página 2 (Izquierda al girar) --}}
-                        <div class="page-back absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-l-lg shadow-md"
+                        <div class="page-back absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-l-lg shadow-md transform rotate-y-180"
                             style="transform: rotateY(180deg);">
-                            <div class="text-center">
-                                <h3 class="text-3xl font-bold text-gray-800 mb-4">¡Únete Ahora!</h3>
-                                <p class="text-gray-600 mb-8">Forma parte de la innovación académica.</p>
-                                <div
-                                    class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto text-indigo-600">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </div>
+                            {{-- Contenido "Fantasma" / Trace --}}
+                            <div class="opacity-0 transition-opacity duration-700 trace-content">
+                                <h3 class="text-2xl font-bold text-gray-400 mb-4 text-right">Participante</h3>
+                                <p class="text-gray-400 text-right text-sm">Registro completado.</p>
+                                <div class="w-full h-0.5 bg-amber-200 mt-4"></div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Página 1 (Admin/Juez) --}}
-                    <div id="page-1" class="book-page absolute inset-0 preserve-3d origin-left z-20">
-                        {{-- Frente Página 1 (Derecha inicial) --}}
+                    {{-- Página 2 (Juez) --}}
+                    <div id="page-2" class="book-page absolute inset-0 preserve-3d origin-left z-20">
                         <div
-                            class="page-front absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-r-lg shadow-md">
+                            class="page-front absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-r-lg shadow-md border-l border-gray-200">
+                            <div class="flex items-center mb-6">
+                                <div
+                                    class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-lg text-white">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800">Juez</h3>
+                            </div>
+                            <h4 class="text-lg font-semibold text-purple-600 mb-2">Evaluación Real</h4>
+                            <p class="text-gray-600 leading-relaxed text-sm">
+                                Sistema de rúbricas digital. Evalúa proyectos y da feedback.
+                            </p>
+                        </div>
+                        <div class="page-back absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-l-lg shadow-md transform rotate-y-180"
+                            style="transform: rotateY(180deg);">
+                            {{-- Contenido "Fantasma" --}}
+                            <div class="opacity-0 transition-opacity duration-700 delay-300 trace-content">
+                                <h3 class="text-2xl font-bold text-gray-400 mb-4 text-right">Juez</h3>
+                                <p class="text-gray-400 text-right text-sm">Evaluaciones asignadas.</p>
+                                <div class="w-full h-0.5 bg-purple-200 mt-4"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Página 1 (Admin) --}}
+                    <div id="page-1" class="book-page absolute inset-0 preserve-3d origin-left z-30">
+                        <div
+                            class="page-front absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-r-lg shadow-md border-l border-gray-200">
                             <div class="flex items-center mb-6">
                                 <div
                                     class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-lg text-white">
@@ -289,58 +310,55 @@
                                 </div>
                                 <h3 class="text-2xl font-bold text-gray-800">Administrador</h3>
                             </div>
-                            <h4 class="text-lg font-semibold text-blue-600 mb-2">Equipos Dinámicos</h4>
-                            <p class="text-gray-600 leading-relaxed">
-                                Fomenta la colaboración creando equipos multidisciplinarios. Gestión total de usuarios,
-                                roles y eventos académicos.
+                            <h4 class="text-lg font-semibold text-blue-600 mb-2">Gestión Total</h4>
+                            <p class="text-gray-600 leading-relaxed text-sm">
+                                Controla usuarios, roles y eventos.
                             </p>
                         </div>
-                        {{-- Reverso Página 1 (Izquierda al girar) --}}
-                        <div class="page-back absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-l-lg shadow-md"
+                        <div class="page-back absolute inset-0 bg-[#fdfbf7] p-8 flex flex-col justify-center backface-hidden rounded-l-lg shadow-md transform rotate-y-180"
                             style="transform: rotateY(180deg);">
-                            <div class="flex items-center mb-6">
-                                <div
-                                    class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mr-4 shrink-0 shadow-lg text-white">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <h3 class="text-2xl font-bold text-gray-800">Juez</h3>
+                            {{-- Contenido "Fantasma" --}}
+                            <div class="opacity-0 transition-opacity duration-700 delay-300 trace-content">
+                                <h3 class="text-2xl font-bold text-gray-400 mb-4 text-right">Administrador</h3>
+                                <p class="text-gray-400 text-right text-sm">Configuración establecida.</p>
+                                <div class="w-full h-0.5 bg-blue-200 mt-4"></div>
                             </div>
-                            <h4 class="text-lg font-semibold text-purple-600 mb-2">Evaluación Real</h4>
-                            <p class="text-gray-600 leading-relaxed">
-                                Sistema de rúbricas digital. Evalúa proyectos asignados y proporciona feedback
-                                instantáneo a los participantes.
-                            </p>
                         </div>
                     </div>
 
                 </div>
 
                 <!-- Cubierta del libro (Frente) -->
-                <div id="book-cover" class="absolute left-1/2 w-[45%] h-full z-30 origin-left preserve-3d">
+                <div id="book-cover" class="absolute left-1/2 w-[45%] h-full z-40 origin-left preserve-3d">
 
                     {{-- Frente de la portada --}}
                     <div
-                        class="absolute inset-0 bg-gradient-to-r from-blue-900 to-indigo-900 dark:from-gray-900 dark:to-black rounded-r-xl shadow-2xl border-l-4 border-amber-600 backface-hidden p-8">
-                        <div class="h-full border-4 border-amber-500/30 rounded-lg p-6 flex flex-col justify-between">
-                            <div>
-                                <h2 class="text-4xl font-bold text-amber-500 mb-4 font-serif">GesPro</h2>
-                                <div class="w-20 h-1 bg-amber-400 mb-6"></div>
-                                <p class="text-blue-200 text-lg">Manual de Usuario</p>
+                        class="absolute inset-0 bg-gradient-to-r from-blue-900 to-indigo-900 dark:from-gray-900 dark:to-black rounded-r-xl shadow-2xl border-l-4 border-amber-600 backface-hidden p-8 flex flex-col items-center justify-center">
+                        <div
+                            class="h-full w-full border-2 border-amber-500/30 rounded-lg p-6 flex flex-col justify-between items-center text-center">
+                            <div class="mt-8">
+                                {{-- Logo en Portada --}}
+                                <img src="{{ asset('images/LogoOscuro.ico') }}" alt="Deltos Logo"
+                                    class="w-16 h-16 object-contain mb-4 mx-auto animate-pulse">
+                                <h2 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-200 font-sans tracking-widest"
+                                    style="font-family: 'Figtree', sans-serif;">DELTOS</h2>
+                                <div class="w-24 h-1 bg-amber-500 mx-auto mt-2"></div>
                             </div>
-                            <div class="text-right">
-                                <p class="text-white text-2xl font-semibold">2025</p>
+
+                            <div class="mb-8">
+                                <p class="text-blue-200 text-sm tracking-widest uppercase">Sistema de Gestión</p>
+                                <p class="text-white text-xl font-semibold mt-2">2025</p>
                             </div>
                         </div>
                     </div>
 
                     {{-- Reverso de la portada (Visible al abrir) --}}
-                    <div class="absolute inset-0 bg-blue-900 rounded-l-xl shadow-inner backface-hidden p-8 flex flex-col justify-center"
+                    <div class="absolute inset-0 bg-blue-900 rounded-l-xl shadow-inner backface-hidden p-8 flex flex-col justify-center transform rotate-y-180"
                         style="transform: rotateY(180deg);">
-                        <h3 class="text-2xl font-bold text-white mb-4 text-center">Bienvenido</h3>
-                        <p class="text-blue-100 text-center">Explora los módulos del sistema.</p>
+                        <div class="inside-cover-content transition-opacity duration-500">
+                            <h3 class="text-2xl font-bold text-white mb-4 text-center">Bienvenido</h3>
+                            <p class="text-blue-100 text-center">Explora los módulos del sistema.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -426,7 +444,7 @@
 
         <footer
             class="py-8 text-center w-full text-sm text-gray-400 dark:text-gray-600 border-t border-gray-100 dark:border-gray-800">
-            &copy; {{ date('Y') }} GesPro System. Todos los derechos reservados.
+            &copy; {{ date('Y') }} Deltos. Todos los derechos reservados.
         </footer>
     </div>
 

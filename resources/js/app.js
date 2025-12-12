@@ -292,31 +292,31 @@ function initBookAnimation() {
     const bookCover = document.getElementById('book-cover');
     const page1 = document.getElementById('page-1');
     const page2 = document.getElementById('page-2');
+    const page3 = document.getElementById('page-3');
     const bookControls = document.getElementById('book-controls');
     const bookText = document.getElementById('book-text');
 
-    if (!bookContainer || !bookCover || !page1 || !page2) return;
+    if (!bookContainer || !bookCover || !page1 || !page2 || !page3) return;
 
     // 1. CONFIGURACIÓN INICIAL (Estado Hero)
     // El libro empieza fijo en el fondo, inclinado y semitransparente
-    // Ajustado para estar "detrás" del trofeo visualmente
     gsap.set(bookContainer, {
         position: 'fixed',
-        top: '20%', // Un poco más arriba para asomar detrás del trofeo
+        top: '20%',
         left: '50%',
         xPercent: -50,
         yPercent: -50,
         rotationX: 30,
         rotationY: -10,
         rotationZ: -5,
-        scale: 0.5, // Más pequeño al inicio
-        opacity: 0, // Empieza invisible para evitar flash
+        scale: 0.5,
+        opacity: 0,
         zIndex: 0,
         filter: 'blur(4px)'
     });
 
     // Configuración de páginas y cubierta para rotación realista
-    const pages = [bookCover, page1, page2];
+    const pages = [bookCover, page1, page2, page3];
     gsap.set(pages, {
         rotationY: 0,
         transformOrigin: "left center",
@@ -327,7 +327,6 @@ function initBookAnimation() {
     gsap.to(bookContainer, { opacity: 0.4, duration: 1, delay: 0.5 });
 
     // 2. FASE 1: TRANSICIÓN HERO -> BOOK SECTION
-    // Al hacer scroll, el libro viaja, se endereza y se vuelve opaco
     const transitionTl = gsap.timeline({
         scrollTrigger: {
             trigger: "#book-section",
@@ -357,36 +356,60 @@ function initBookAnimation() {
         scrollTrigger: {
             trigger: "#book-section",
             start: "center center",
-            end: "+=4000", // Scroll largo para leer cómodamente
+            end: "+=5000", // Más largo al tener más páginas
             pin: true,
             scrub: 1,
             anticipatePin: 1
         }
     });
 
-    // Paso A: Abrir la Portada
-    bookTl.to(bookCover, {
-        rotationY: -180,
-        duration: 2,
-        ease: "power2.inOut"
-    });
-    // Eliminado el desplazamiento xPercent para mantener el lomo centrado
+    // Función helper para pasar página y revelar rastro con delay
+    // Función helper para pasar página y revelar rastro con delay
+    // Agregamos parametro finalZ para corregir superposición
+    function turnPage(element, finalZ) {
+        // Girar página
+        bookTl.to(element, {
+            rotationY: -180,
+            zIndex: finalZ, // Fix Z-Index
+            duration: 2,
+            ease: "power2.inOut"
+        });
 
-    // Paso B: Pasar Página 1 (Admin -> Juez)
-    bookTl.to(page1, {
-        rotationY: -180,
-        duration: 2,
-        ease: "power2.inOut"
-    }, "+=0.5");
+        // FADE OUT DE CONTENIDO INTERNO (Para la portada: "Bienvenido")
+        // Soluciona visualmente el overlapping quitando el texto, dejando solo el borde/fondo
+        const insideContent = element.querySelector('.inside-cover-content');
+        if (insideContent) {
+            bookTl.to(insideContent, {
+                opacity: 0,
+                duration: 0.5,
+                ease: "power2.in"
+            }, "-=0.5"); // Se desvanece justo al terminar de abrirse
+        }
 
-    // Paso C: Pasar Página 2 (Participante -> Final)
-    bookTl.to(page2, {
-        rotationY: -180,
-        duration: 2,
-        ease: "power2.inOut"
-    }, "+=0.5");
+        // Revelar contenido "trace" al finalizar giro (en la parte trasera)
+        const traceContent = element.querySelector('.trace-content');
+        if (traceContent) {
+            bookTl.to(traceContent, {
+                opacity: 1,
+                duration: 0.5,
+                ease: "power2.out"
+            }, "-=1.5");
+        }
+    }
 
-    // Mantener el final un momento
+    // A: Abrir Portada - Al abrirse debe ir al fondo del stack izquierdo (Z=1)
+    turnPage(bookCover, 1);
+
+    // B: Pasar Página 1 - Queda sobre la portada (Z=2)
+    turnPage(page1, 2);
+
+    // C: Pasar Página 2 - Queda sobre la página 1 (Z=3)
+    turnPage(page2, 3);
+
+    // D: Pasar Página 3 - Queda sobre la página 2 (Z=4)
+    turnPage(page3, 4);
+
+    // Mantener final
     bookTl.to({}, { duration: 1 });
 
     // 4. FASE 3: SALIDA
@@ -398,7 +421,7 @@ function initBookAnimation() {
         ease: "power2.in"
     });
 
-    console.log('Book animation initialized: Fixed -> Scroll -> Open -> Read');
+    console.log('Book animation initialized: Covers + 3 Pages logic');
     ScrollTrigger.refresh();
 }
 
