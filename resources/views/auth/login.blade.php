@@ -38,8 +38,10 @@
                             class="w-16 h-16 object-contain block dark:hidden">
                         <img src="{{ asset('images/LogoOscuro.ico') }}" alt="GesPro Logo Dark"
                             class="w-16 h-16 object-contain hidden dark:block">
-                        <span class="font-bold text-4xl tracking-tight">
-                            <span class="text-white">Ges</span><span class="text-indigo-400">Pro</span>
+                        <span class="font-bold text-4xl tracking-widest font-sans"
+                            style="font-family: 'Figtree', sans-serif;">
+                            <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">DELTOS</span>
                         </span>
                     </div>
                     <p class="mt-2 text-indigo-100 opacity-90 text-lg">Gestión de Proyectos Académicos</p>

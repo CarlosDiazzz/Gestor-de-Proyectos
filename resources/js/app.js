@@ -29,117 +29,175 @@ function initTrophy3D() {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-    camera.position.set(0, 1, 8);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(0, 0.5, 7); // Adjust camera to see detailing
+    camera.lookAt(0, 0.2, 0);
 
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.0;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    // Iluminación mejorada para resaltar el dorado
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    // --- Iluminación ---
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xfff0dd, 4);
-    dirLight.position.set(5, 10, 7);
+    const dirLight = new THREE.DirectionalLight(0xfff5e1, 3);
+    dirLight.position.set(5, 5, 5);
     dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 1024;
+    dirLight.shadow.mapSize.height = 1024;
     scene.add(dirLight);
 
-    const pointLight = new THREE.PointLight(0xffd700, 2, 10);
-    pointLight.position.set(-2, 2, 2);
-    scene.add(pointLight);
+    // Luz de borde para resaltar contornos
+    const spotLight = new THREE.SpotLight(0xffd700, 5);
+    spotLight.position.set(-5, 5, 2);
+    spotLight.angle = Math.PI / 4;
+    spotLight.penumbra = 0.5;
+    scene.add(spotLight);
 
-    // Grupo del Trofeo
+    // --- Grupo Principal ---
     const trophyGroup = new THREE.Group();
 
-    // Material Dorado Premium (Physical Material)
+    // --- Materiales ---
     const goldMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0xffcc00,
+        color: 0xffd700,
+        emissive: 0x221100, // brillo interno sutil
+        roughness: 0.25,
         metalness: 1.0,
-        roughness: 0.2,
-        clearcoat: 1.0,
+        clearcoat: 0.8,
         clearcoatRoughness: 0.1,
-        emissive: 0x221100,
-        emissiveIntensity: 0.2,
-        reflectivity: 1.0
+        reflectivity: 1
     });
 
-    // Base (Más detallada)
-    const baseGeo = new THREE.CylinderGeometry(1.4, 1.6, 0.4, 64);
-    const base = new THREE.Mesh(baseGeo, goldMaterial);
-    base.position.y = -1.8;
-    trophyGroup.add(base);
+    const reliefMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0xe6b800, // Un oro ligeramente diferente para contraste
+        roughness: 0.3,
+        metalness: 1.0,
+        clearcoat: 0.5
+    });
 
-    const baseGeo2 = new THREE.CylinderGeometry(1.0, 1.4, 0.4, 64);
+
+    // --- Geometrías ---
+
+    // 1. Base (Escalonada)
+    const baseGeo1 = new THREE.CylinderGeometry(1.2, 1.4, 0.3, 64);
+    const base1 = new THREE.Mesh(baseGeo1, goldMaterial);
+    base1.position.y = -2;
+    base1.receiveShadow = true;
+    trophyGroup.add(base1);
+
+    const baseGeo2 = new THREE.CylinderGeometry(0.9, 1.1, 0.6, 64);
     const base2 = new THREE.Mesh(baseGeo2, goldMaterial);
-    base2.position.y = -1.4;
+    base2.position.y = -1.55;
+    base2.receiveShadow = true;
     trophyGroup.add(base2);
 
-    // Tallo (Con curvas)
-    const stemGeo = new THREE.CylinderGeometry(0.4, 0.6, 1.8, 32);
+    // 2. Columna Central Decorada
+    const stemGeo = new THREE.CylinderGeometry(0.3, 0.4, 1.2, 32);
     const stem = new THREE.Mesh(stemGeo, goldMaterial);
-    stem.position.y = -0.3;
+    stem.position.y = -0.7;
     trophyGroup.add(stem);
 
-    // Anillo decorativo en el tallo
-    const ringGeo = new THREE.TorusGeometry(0.5, 0.1, 16, 100);
-    const ring = new THREE.Mesh(ringGeo, goldMaterial);
-    ring.rotation.x = Math.PI / 2;
-    ring.position.y = -0.3;
-    trophyGroup.add(ring);
+    // Detalles en la columna (Anillos)
+    const ringGeo = new THREE.TorusGeometry(0.4, 0.08, 16, 64);
+    const ring1 = new THREE.Mesh(ringGeo, goldMaterial);
+    ring1.rotation.x = Math.PI / 2;
+    ring1.position.y = -1.1;
+    trophyGroup.add(ring1);
 
-    // Copa (Más suave)
-    const cupGeo = new THREE.SphereGeometry(1.6, 64, 64, 0, Math.PI * 2, 0, Math.PI * 0.65);
+    const ring2 = new THREE.Mesh(ringGeo, goldMaterial);
+    ring2.rotation.x = Math.PI / 2;
+    ring2.position.y = -0.3;
+    trophyGroup.add(ring2);
+
+    // 3. La Copa
+    const cupPoints = [];
+    for (let i = 0; i < 10; i++) {
+        cupPoints.push(new THREE.Vector2(Math.sin(i * 0.2) * 1.5 + 0.3, (i * 0.25)));
+    }
+    const cupGeo = new THREE.LatheGeometry(cupPoints, 64);
     const cup = new THREE.Mesh(cupGeo, goldMaterial);
-    cup.rotation.x = Math.PI;
-    cup.position.y = 1.3;
-    cup.material.side = THREE.DoubleSide;
+    cup.position.y = -0.1;
+    cup.castShadow = true;
+    cup.receiveShadow = true;
     trophyGroup.add(cup);
 
-    // Asas (Más elegantes)
-    const handlePath = new THREE.Path();
-    handlePath.moveTo(0, 0);
-    handlePath.bezierCurveTo(1.5, 0.5, 1.5, 2.5, 0, 3);
-
-    const handleGeo = new THREE.TubeGeometry(
-        new THREE.CatmullRomCurve3([
-            new THREE.Vector3(1.4, 0.5, 0),
-            new THREE.Vector3(2.2, 1.5, 0),
-            new THREE.Vector3(1.4, 2.5, 0)
-        ]),
-        64, 0.15, 16, false
-    );
-
+    // 4. Asas (Handles) - Torus parciales o Tubos
+    const handleShape = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(1.2, 0.5, 0),
+        new THREE.Vector3(2.0, 1.5, 0),
+        new THREE.Vector3(1.5, 2.2, 0),
+        new THREE.Vector3(1.0, 1.8, 0)
+    ]);
+    const handleGeo = new THREE.TubeGeometry(handleShape, 64, 0.12, 16, false);
     const handle1 = new THREE.Mesh(handleGeo, goldMaterial);
     trophyGroup.add(handle1);
 
-    const handle2 = new THREE.Mesh(handleGeo, goldMaterial);
+    const handle2 = handle1.clone();
     handle2.rotation.y = Math.PI;
     trophyGroup.add(handle2);
 
-    // Inclinación inicial
-    trophyGroup.rotation.z = 0.15;
-    trophyGroup.rotation.x = 0.1;
+    // --- RELIEVE DE BIRRETE (Graduation Cap Relief) ---
+    // Construimos una geometría compuesta para simular el relieve en el frente
+
+    const capGroup = new THREE.Group();
+
+    // Tablero del birrete (Rombo plano)
+    const boardGeo = new THREE.BoxGeometry(0.8, 0.05, 0.8);
+    const board = new THREE.Mesh(boardGeo, reliefMaterial);
+    // Rotar para forma de rombo vista de frente
+    board.rotation.x = Math.PI / 4; // Inclinar un poco
+    board.rotation.y = Math.PI / 4; // Girar para que apunte la esquina el frente
+    capGroup.add(board);
+
+    // Gorro base (Skullcap)
+    const capBaseGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.2, 32);
+    const capBase = new THREE.Mesh(capBaseGeo, reliefMaterial);
+    capBase.position.y = -0.15;
+    capGroup.add(capBase);
+
+    // Borla (Tassel)
+    const tasselGeo = new THREE.CylinderGeometry(0.02, 0.05, 0.4, 8);
+    const tassel = new THREE.Mesh(tasselGeo, reliefMaterial);
+    tassel.position.set(0.35, -0.1, 0.1);
+    tassel.rotation.z = -0.3;
+    capGroup.add(tassel);
+
+    const tasselKnot = new THREE.SphereGeometry(0.04, 16, 16);
+    const knot = new THREE.Mesh(tasselKnot, reliefMaterial);
+    knot.position.set(0, 0.05, 0); // Centro arriba
+    capGroup.add(knot);
+
+    // Posicionar el relieve en la superficie de la copa
+    // La copa tiene radio aprox 1.5 en y=1.5
+    capGroup.position.set(0, 1.2, 1.35); // En frente (Z positivo), altura media
+    capGroup.rotation.x = -0.2; // Alinear con la curvatura de la copa
+
+    trophyGroup.add(capGroup);
 
     scene.add(trophyGroup);
 
-    // Animación de flotación y rotación
+    // --- Animación ---
+
+    // Rotación suave constante
     gsap.to(trophyGroup.rotation, {
-        y: Math.PI * 2 + 0.15,
-        duration: 15,
-        ease: "none",
-        repeat: -1
+        y: Math.PI * 2,
+        duration: 20,
+        repeat: -1,
+        ease: "none"
     });
 
+    // Flotación arriba/abajo
     gsap.to(trophyGroup.position, {
-        y: 0.4,
+        y: 0.2,
         duration: 3,
-        ease: "sine.inOut",
         yoyo: true,
-        repeat: -1
+        repeat: -1,
+        ease: "sine.inOut"
     });
 
     function animate() {
@@ -148,7 +206,9 @@ function initTrophy3D() {
     }
     animate();
 
+    // Resize Handler
     window.addEventListener('resize', () => {
+        if (!canvas) return;
         const width = canvas.clientWidth;
         const height = canvas.clientHeight;
         camera.aspect = width / height;
@@ -232,31 +292,31 @@ function initBookAnimation() {
     const bookCover = document.getElementById('book-cover');
     const page1 = document.getElementById('page-1');
     const page2 = document.getElementById('page-2');
+    const page3 = document.getElementById('page-3');
     const bookControls = document.getElementById('book-controls');
     const bookText = document.getElementById('book-text');
 
-    if (!bookContainer || !bookCover || !page1 || !page2) return;
+    if (!bookContainer || !bookCover || !page1 || !page2 || !page3) return;
 
     // 1. CONFIGURACIÓN INICIAL (Estado Hero)
     // El libro empieza fijo en el fondo, inclinado y semitransparente
-    // Ajustado para estar "detrás" del trofeo visualmente
     gsap.set(bookContainer, {
         position: 'fixed',
-        top: '20%', // Un poco más arriba para asomar detrás del trofeo
+        top: '20%',
         left: '50%',
         xPercent: -50,
         yPercent: -50,
         rotationX: 30,
         rotationY: -10,
         rotationZ: -5,
-        scale: 0.5, // Más pequeño al inicio
-        opacity: 0, // Empieza invisible para evitar flash
+        scale: 0.5,
+        opacity: 0,
         zIndex: 0,
         filter: 'blur(4px)'
     });
 
     // Configuración de páginas y cubierta para rotación realista
-    const pages = [bookCover, page1, page2];
+    const pages = [bookCover, page1, page2, page3];
     gsap.set(pages, {
         rotationY: 0,
         transformOrigin: "left center",
@@ -267,7 +327,6 @@ function initBookAnimation() {
     gsap.to(bookContainer, { opacity: 0.4, duration: 1, delay: 0.5 });
 
     // 2. FASE 1: TRANSICIÓN HERO -> BOOK SECTION
-    // Al hacer scroll, el libro viaja, se endereza y se vuelve opaco
     const transitionTl = gsap.timeline({
         scrollTrigger: {
             trigger: "#book-section",
@@ -297,36 +356,60 @@ function initBookAnimation() {
         scrollTrigger: {
             trigger: "#book-section",
             start: "center center",
-            end: "+=4000", // Scroll largo para leer cómodamente
+            end: "+=5000", // Más largo al tener más páginas
             pin: true,
             scrub: 1,
             anticipatePin: 1
         }
     });
 
-    // Paso A: Abrir la Portada
-    bookTl.to(bookCover, {
-        rotationY: -180,
-        duration: 2,
-        ease: "power2.inOut"
-    });
-    // Eliminado el desplazamiento xPercent para mantener el lomo centrado
+    // Función helper para pasar página y revelar rastro con delay
+    // Función helper para pasar página y revelar rastro con delay
+    // Agregamos parametro finalZ para corregir superposición
+    function turnPage(element, finalZ) {
+        // Girar página
+        bookTl.to(element, {
+            rotationY: -180,
+            zIndex: finalZ, // Fix Z-Index
+            duration: 2,
+            ease: "power2.inOut"
+        });
 
-    // Paso B: Pasar Página 1 (Admin -> Juez)
-    bookTl.to(page1, {
-        rotationY: -180,
-        duration: 2,
-        ease: "power2.inOut"
-    }, "+=0.5");
+        // FADE OUT DE CONTENIDO INTERNO (Para la portada: "Bienvenido")
+        // Soluciona visualmente el overlapping quitando el texto, dejando solo el borde/fondo
+        const insideContent = element.querySelector('.inside-cover-content');
+        if (insideContent) {
+            bookTl.to(insideContent, {
+                opacity: 0,
+                duration: 0.5,
+                ease: "power2.in"
+            }, "-=0.5"); // Se desvanece justo al terminar de abrirse
+        }
 
-    // Paso C: Pasar Página 2 (Participante -> Final)
-    bookTl.to(page2, {
-        rotationY: -180,
-        duration: 2,
-        ease: "power2.inOut"
-    }, "+=0.5");
+        // Revelar contenido "trace" al finalizar giro (en la parte trasera)
+        const traceContent = element.querySelector('.trace-content');
+        if (traceContent) {
+            bookTl.to(traceContent, {
+                opacity: 1,
+                duration: 0.5,
+                ease: "power2.out"
+            }, "-=1.5");
+        }
+    }
 
-    // Mantener el final un momento
+    // A: Abrir Portada - Al abrirse debe ir al fondo del stack izquierdo (Z=1)
+    turnPage(bookCover, 1);
+
+    // B: Pasar Página 1 - Queda sobre la portada (Z=2)
+    turnPage(page1, 2);
+
+    // C: Pasar Página 2 - Queda sobre la página 1 (Z=3)
+    turnPage(page2, 3);
+
+    // D: Pasar Página 3 - Queda sobre la página 2 (Z=4)
+    turnPage(page3, 4);
+
+    // Mantener final
     bookTl.to({}, { duration: 1 });
 
     // 4. FASE 3: SALIDA
@@ -338,7 +421,7 @@ function initBookAnimation() {
         ease: "power2.in"
     });
 
-    console.log('Book animation initialized: Fixed -> Scroll -> Open -> Read');
+    console.log('Book animation initialized: Covers + 3 Pages logic');
     ScrollTrigger.refresh();
 }
 
