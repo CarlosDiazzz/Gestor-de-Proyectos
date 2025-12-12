@@ -397,17 +397,18 @@
             </div>
         </section>
 
-        {{-- SECCIÓN DEL LIBRO ANIMADO (Placeholder para el scroll) --}}
-        <section id="book-section" class="min-h-screen py-20 flex items-center justify-center relative">
+        {{-- SECCIÓN DEL LIBRO ANIMADO --}}
+        <section id="book-section" class="min-h-screen py-20 flex items-center justify-center relative overflow-hidden">
             <div class="max-w-7xl mx-auto px-6 w-full h-full flex flex-col items-center justify-center">
-                <div class="text-center mb-16 opacity-0" id="book-text">
+                <div class="text-center mb-16 opacity-0 relative z-10" id="book-text">
                     <h2 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
                         Descubre Nuestro Sistema
                     </h2>
                 </div>
 
                 {{-- El libro se moverá aquí visualmente --}}
-                <div class="h-[600px] w-full"></div>
+                {{-- Ajustes responsivos: Scale en móvil para evitar corte --}}
+                <div class="h-[400px] md:h-[600px] w-full relative z-0 scale-75 md:scale-100 origin-center"></div>
 
                 <!-- Controles del libro -->
                 <div class="text-center mt-12 opacity-0" id="book-controls">
