@@ -528,25 +528,26 @@
     {{-- ================================================= --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         {{-- Card: Crear un Nuevo Equipo --}}
+        {{-- Card: Crear un Nuevo Equipo --}}
         <a href="{{ route('participante.equipos.create') }}"
-            class="group relative bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg hover:border-indigo-500 dark:hover:border-indigo-500 transition-all duration-300 flex flex-col min-h-[280px]">
+            class="group relative bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-2xl hover:border-indigo-500 dark:hover:border-indigo-500 transition-all duration-500 flex flex-col items-center justify-center min-h-[300px] text-center transform hover:-translate-y-2 animate-fade-in-up" style="animation-duration: 0.6s;">
             <div
-                class="absolute top-4 right-4 w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center group-hover:bg-indigo-600 transition-colors duration-300">
-                <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400 group-hover:text-white transition-colors"
+                class="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center group-hover:bg-indigo-600 transition-all duration-500 mb-6 group-hover:scale-110 shadow-inner">
+                <svg class="w-10 h-10 text-indigo-600 dark:text-indigo-400 group-hover:text-white transition-colors"
                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
             </div>
             <h3
-                class="text-xl font-bold text-gray-900 dark:text-white mb-2 pr-16 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                class="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 Crear un Nuevo Equipo</h3>
-            <p class="text-gray-500 dark:text-gray-400 text-sm mb-auto">Registra tu idea de
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6 max-w-xs mx-auto">Registra tu idea de
                 proyecto,
                 conviértete en líder y recluta a tus compañeros.</p>
             <span
-                class="inline-flex items-center text-sm font-bold text-indigo-600 dark:text-indigo-400 group-hover:translate-x-1 transition-transform mt-6">
-                Comenzar Registro <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                class="inline-flex items-center text-sm font-bold text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform">
+                Comenzar Registro <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -555,11 +556,12 @@
         </a>
 
         {{-- Card: Unirme a un Equipo --}}
+        {{-- Card: Unirme a un Equipo --}}
         <a href="{{ route('participante.equipos.join') }}"
-            class="group relative bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg hover:border-purple-500 dark:hover:border-purple-500 transition-all duration-300 flex flex-col min-h-[280px]">
+            class="group relative bg-white dark:bg-gray-800 p-8 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-2xl hover:border-purple-500 dark:hover:border-purple-500 transition-all duration-500 flex flex-col items-center justify-center min-h-[300px] text-center transform hover:-translate-y-2 animate-fade-in-up" style="animation-duration: 0.8s;">
             <div
-                class="absolute top-4 right-4 w-12 h-12 bg-purple-50 dark:bg-purple-900/20 rounded-full flex items-center justify-center group-hover:bg-purple-600 transition-colors duration-300">
-                <svg class="w-6 h-6 text-purple-600 dark:text-purple-400 group-hover:text-white transition-colors"
+                class="w-20 h-20 bg-purple-50 dark:bg-purple-900/20 rounded-full flex items-center justify-center group-hover:bg-purple-600 transition-all duration-500 mb-6 group-hover:scale-110 shadow-inner">
+                <svg class="w-10 h-10 text-purple-600 dark:text-purple-400 group-hover:text-white transition-colors"
                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
@@ -567,13 +569,13 @@
                 </svg>
             </div>
             <h3
-                class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                class="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                 Unirme a un Equipo</h3>
-            <p class="text-gray-500 dark:text-gray-400 text-sm mb-auto">Explora los equipos
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6 max-w-xs mx-auto">Explora los equipos
                 existentes que buscan talento y postúlate con tu perfil.</p>
             <span
-                class="inline-flex items-center text-sm font-bold text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform mt-6">
-                Ver Vacantes <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                class="inline-flex items-center text-sm font-bold text-purple-600 dark:text-purple-400 group-hover:scale-105 transition-transform">
+                Ver Vacantes <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 8l4 4m0 0l-4 4m4-4H3"></path>

@@ -48,7 +48,8 @@
                             <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus
                                 autocomplete="name"
                                 class="w-full pl-10 pr-4 py-3 rounded-xl border-gray-300 dark:bg-gray-900 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm"
-                                placeholder="Juan Pérez" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" title="Solo letras y espacios">
+                                placeholder="Juan Pérez" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+"
+                                title="Solo letras y espacios">
                         </div>
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
@@ -140,8 +141,9 @@
 
                 <div class="relative z-10 text-right">
                     <div class="flex items-center justify-end gap-3 mb-6">
-                        <span class="font-bold text-4xl tracking-tight">
-                            <span class="text-white">Ges</span><span class="text-indigo-400">Pro</span>
+                        <span class="font-bold text-4xl tracking-widest font-sans"
+                            style="font-family: 'Figtree', sans-serif;">
+                            <span class="text-white">DELTOS</span>
                         </span>
                         <img src="{{ asset('images/LogoClaro.ico') }}" alt="GesPro Logo"
                             class="w-16 h-16 object-contain block dark:hidden">
