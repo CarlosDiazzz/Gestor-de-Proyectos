@@ -1,4 +1,14 @@
-<div x-data="{ open: false }" class="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
+<div x-data="{ 
+    open: false, 
+    blinking: localStorage.getItem('help_widget_interacted') !== 'true',
+    toggle() {
+        this.open = !this.open;
+        if (this.blinking) {
+            this.blinking = false;
+            localStorage.setItem('help_widget_interacted', 'true');
+        }
+    }
+}" class="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
     <!-- FAQ Menu -->
     <div x-show="open" x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-4 scale-95"
@@ -116,7 +126,7 @@
     </div>
 
     <!-- Help Button -->
-    <button @click="open = !open"
+    <button @click="toggle()"
         class="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white shadow-lg shadow-green-500/30 transition-all duration-300 hover:scale-110 hover:shadow-green-500/50 focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800 relative"
         aria-label="Ayuda">
         <svg xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +136,8 @@
                 d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <!-- Pulse Ring -->
-        <span
+        <span x-show="blinking" x-transition:leave="transition ease-in duration-300"
+            x-transition:leave-start="opacity-30" x-transition:leave-end="opacity-0"
             class="absolute -inset-1 rounded-full bg-green-400 opacity-30 animate-ping group-hover:animate-none"></span>
     </button>
 </div>
